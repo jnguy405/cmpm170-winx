@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 898d20806b3ea5345b83c4d3260e6399
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 142621
+  packageName: FairyA
+  packageVersion: 1.0
+  assetPath: Assets/Hit/Fairy/Animator/Fairy.controller
+  uploadId: 551425

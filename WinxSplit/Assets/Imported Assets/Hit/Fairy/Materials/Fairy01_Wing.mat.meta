@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 778648dd0c8b84540a5c64351fb67332
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 142621
+  packageName: FairyA
+  packageVersion: 1.0
+  assetPath: Assets/Hit/Fairy/Materials/Fairy01_Wing.mat
+  uploadId: 551425
