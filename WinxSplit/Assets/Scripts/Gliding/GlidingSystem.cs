@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 // Aerodynamics: drag along velocity, lift with speed, extra push when diving.
 public class GlidingSystem : MonoBehaviour
 {
+    [Header("Glide State")]
+    [SerializeField] private bool isGliding;
+
     [Header("Mouse steering")]
     [SerializeField] private float mouseSensitivity = 2f;
     [SerializeField] private float maxPitch = 55f;                      // Maximum pitch of the glider (angle of the glider in the y-axis)
@@ -43,6 +46,8 @@ public class GlidingSystem : MonoBehaviour
     private float horizontalInputVel;                          // Velocity of the horizontal input (how fast the horizontal input is applied)
     private float verticalInputSmoothed;                       // Smoothed vertical input (how smooth the vertical input is)
     private float verticalInputVel;                            // Velocity of the vertical input (how fast the vertical input is applied)
+
+    public bool IsGliding => isGliding;
 
     // Get the transform of the physics follow object to follow the glider
     public static Transform GetPhysicsFollowTransform(GlidingSystem glider)
@@ -212,5 +217,10 @@ public class GlidingSystem : MonoBehaviour
             Mathf.Max(1e-5f, smoothTime),
             Mathf.Infinity,
             deltaTime);
+    }
+
+    public void SetGliding(bool value)
+    {
+        isGliding = value;
     }
 }

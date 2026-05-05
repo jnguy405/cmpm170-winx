@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
         bool shouldCrouch = Input.GetKey(KeyCode.LeftControl);
         if (shouldCrouch != isCrouching)
         {
-            SetCrouchState(shouldCrouch);
+            Crouch(shouldCrouch);
         }
     }
 
