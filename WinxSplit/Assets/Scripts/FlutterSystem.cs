@@ -10,8 +10,7 @@ public class GlidingSystem : MonoBehaviour
     [SerializeField] private float mouseSensitivity = 2f;
     [SerializeField] private float maxPitch = 55f;
     [SerializeField] private float maxRoll = 45f;
-    [Tooltip("How strongly horizontal mouse banks the wings toward that side.")]
-    [SerializeField] private float rollBankStrength = 42f;
+    [SerializeField] private float rollBankStrength = 30f;
     [SerializeField] private float rollEaseSpeed = 10f;
 
     [SerializeField] private float horizontalInputSmoothTime = 0.075f;
@@ -20,11 +19,22 @@ public class GlidingSystem : MonoBehaviour
 
     [SerializeField] private float steerMaxDegreesPerSecond = 30f;
 
+    [Header("Vertical pitch feel (mouse up/down)")]
+    [SerializeField] private float pullUpPitchInputScale = 1f;
+
+    [SerializeField] private float divePitchInputScale = 1.2f;
+
     [Header("Paper glide — forces (Acceleration)")]
-    [SerializeField] private float quadraticDrag = 0.7f;
+    [SerializeField] private float forwardAcceleration = 500f;
+
+    [SerializeField] private float quadraticDrag = 0.2f;
     [SerializeField] private float liftPerSpeed = 3.5f;
     [SerializeField] private float stallSpeed = 3.5f;
     [SerializeField] private float diveBoost = 12f;
+
+    [SerializeField] private float diveDropAcceleration = 100f;
+
+    [SerializeField] private float loftLiftWhenNoseUp = 90f;
 
     private Rigidbody rb;
     private float yaw;
@@ -117,7 +127,13 @@ public class GlidingSystem : MonoBehaviour
             Time.deltaTime);
 
         yaw += horizontalInputSmoothed;
-        pitch = Mathf.Clamp(pitch - verticalInputSmoothed, -maxPitch, maxPitch);
+
+        float v = verticalInputSmoothed;
+        float pitchInput = v;
+        if (Mathf.Abs(v) > 1e-6f)
+            pitchInput = v > 0f ? v * pullUpPitchInputScale : v * divePitchInputScale;
+
+        pitch = Mathf.Clamp(pitch - pitchInput, -maxPitch, maxPitch);
 
         float desiredRoll = Mathf.Clamp(-horizontalInputSmoothed * rollBankStrength, -maxRoll, maxRoll);
         float rollAlpha = 1f - Mathf.Exp(-rollEaseSpeed * Time.deltaTime);
@@ -144,6 +160,9 @@ public class GlidingSystem : MonoBehaviour
         float speed = v.magnitude;
         Vector3 forward = transform.forward;
 
+        if (forwardAcceleration > 1e-5f)
+            rb.AddForce(forward * forwardAcceleration, ForceMode.Acceleration);
+
         if (speed > 0.01f)
             rb.AddForce(-quadraticDrag * speed * v, ForceMode.Acceleration);
 
@@ -153,6 +172,13 @@ public class GlidingSystem : MonoBehaviour
 
         float dive = Mathf.Max(0f, Vector3.Dot(forward, Vector3.down));
         rb.AddForce(forward * (diveBoost * dive * air), ForceMode.Acceleration);
+
+        if (diveDropAcceleration > 1e-5f)
+            rb.AddForce(Vector3.down * (diveDropAcceleration * dive * air), ForceMode.Acceleration);
+
+        float noseUp = Mathf.Max(0f, Vector3.Dot(forward, Vector3.up));
+        if (loftLiftWhenNoseUp > 1e-5f)
+            rb.AddForce(Vector3.up * (loftLiftWhenNoseUp * noseUp * air), ForceMode.Acceleration);
     }
 
     private static float SmoothInputAxis(float current, float target, ref float velocity, float smoothTime, float deltaTime)
