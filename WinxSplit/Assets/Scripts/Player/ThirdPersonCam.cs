@@ -8,10 +8,9 @@ public class ThirdPersonCam : MonoBehaviour
     [Header("Target")]
     [SerializeField] private Transform target;
     [SerializeField] private Vector3 focusOffset = new Vector3(0f, 1.6f, 0f);
-    [SerializeField] private bool autoFindPlayer = true;
 
     [Header("Orbit")]
-    [SerializeField] private float distance = 5f;
+    [SerializeField] private float distance = 3f;
     [SerializeField] private float yawSpeed = 180f;
     [SerializeField] private float pitchSpeed = 120f;
     [SerializeField] private float minPitch = -25f;
@@ -33,19 +32,10 @@ public class ThirdPersonCam : MonoBehaviour
 
     private float yaw;
     private float pitch;
-    private bool warnedMissingTarget;
+    private bool mouseLookEnabled = true;
 
     private void Awake()
     {
-        if (target == null && autoFindPlayer)
-        {
-            PlayerController player = FindAnyObjectByType<PlayerController>();
-            if (player != null)
-            {
-                target = player.transform;
-            }
-        }
-
         Vector3 currentAngles = transform.eulerAngles;
         yaw = currentAngles.y;
         pitch = NormalizePitch(currentAngles.x);
@@ -64,16 +54,13 @@ public class ThirdPersonCam : MonoBehaviour
     {
         if (target == null)
         {
-            if (!warnedMissingTarget)
-            {
-                warnedMissingTarget = true;
-                Debug.LogWarning($"{nameof(ThirdPersonCam)} on '{name}': assign a target transform.", this);
-            }
-
             return;
         }
 
-        HandleMouseLook();
+        if (mouseLookEnabled)
+        {
+            HandleMouseLook();
+        }
 
         Vector3 focusPoint = target.position + focusOffset;
         Quaternion orbitRotation = Quaternion.Euler(pitch, yaw, 0f);
@@ -148,5 +135,10 @@ public class ThirdPersonCam : MonoBehaviour
         }
 
         return rawPitch;
+    }
+
+    public void SetMouseLookEnabled(bool enabled)
+    {
+        mouseLookEnabled = enabled;
     }
 }

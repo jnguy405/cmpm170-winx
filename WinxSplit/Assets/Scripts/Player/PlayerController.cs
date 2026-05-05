@@ -51,7 +51,6 @@ public class PlayerController : MonoBehaviour
 
         if (rb == null)
         {
-            Debug.LogError($"{nameof(PlayerController)} on '{name}': no Rigidbody assigned or found. Assign the shared player Rigidbody in the inspector.", this);
             enabled = false;
             return;
         }
@@ -65,7 +64,6 @@ public class PlayerController : MonoBehaviour
 
         if (physicsCollider == null)
         {
-            Debug.LogError($"{nameof(PlayerController)} on '{name}': no Collider assigned or found for grounding probe.", this);
             enabled = false;
             return;
         }
@@ -77,16 +75,6 @@ public class PlayerController : MonoBehaviour
 
         // myAnimator = GetComponent<Animator>();
         baseScaleY = transform.localScale.y;
-
-        if (glidingSystem == null)
-        {
-            glidingSystem = FindAnyObjectByType<GlidingSystem>();
-        }
-
-        if (camModeSwitch == null)
-        {
-            camModeSwitch = FindAnyObjectByType<CamModeSwitch>();
-        }
 
         isGrounded = groundCheck != null && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         wasGrounded = isGrounded;
@@ -103,34 +91,25 @@ public class PlayerController : MonoBehaviour
         UpdateGroundedState();
         HandleStateInput();
         MovementInput();
-        HandleJumpInput();
         // UpdateAnimation();
     }
 
     private void HandleStateInput()
     {
         Keyboard keyboard = Keyboard.current;
+        bool glideTogglePressed = keyboard != null && keyboard.spaceKey.wasPressedThisFrame;
+
+        if (glideTogglePressed)
+        {
+            ToggleGlideMode();
+        }
+
         isSprinting = keyboard != null && keyboard.leftShiftKey.isPressed;
 
         bool shouldCrouch = keyboard != null && keyboard.leftCtrlKey.isPressed;
         if (shouldCrouch != isCrouching)
         {
             Crouch(shouldCrouch);
-        }
-    }
-
-    private void HandleJumpInput()
-    {
-        if (glidingSystem != null && glidingSystem.IsGliding)
-        {
-            return;
-        }
-
-        Keyboard keyboard = Keyboard.current;
-        bool jumpPressed = keyboard != null && keyboard.spaceKey.wasPressedThisFrame;
-        if (jumpPressed && isGrounded)
-        {
-            jumpQueued = true;
         }
     }
 
@@ -277,6 +256,23 @@ public class PlayerController : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.y = isCrouching ? baseScaleY * 0.5f : baseScaleY;
         transform.localScale = scale;
+    }
+
+    private void ToggleGlideMode()
+    {
+        bool currentlyGliding = glidingSystem != null && glidingSystem.IsGliding;
+        bool nextGlideState = !currentlyGliding;
+
+        if (camModeSwitch != null)
+        {
+            camModeSwitch.SetGliding(nextGlideState);
+        }
+        else if (glidingSystem != null)
+        {
+            glidingSystem.SetGliding(nextGlideState);
+        }
+
+        jumpQueued = false;
     }
 
 

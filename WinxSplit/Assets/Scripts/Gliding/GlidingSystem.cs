@@ -85,12 +85,8 @@ public class GlidingSystem : MonoBehaviour
     {
         if (rb == null)
         {
-            Debug.LogWarning($"{nameof(GlidingSystem)} on '{name}': add a Rigidbody.", this);
             return;
         }
-
-        if (rb.isKinematic)
-            Debug.LogWarning($"{nameof(GlidingSystem)} on '{name}': Rigidbody is kinematic.", this);
 
         Vector3 flat = transform.forward;
         flat.y = 0f;
@@ -175,15 +171,15 @@ public class GlidingSystem : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        TryExitGlideOnGroundCollision(collision);
+        ExitGlideOnGroundCollision(collision);
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        TryExitGlideOnGroundCollision(collision);
+        ExitGlideOnGroundCollision(collision);
     }
 
-    private void TryExitGlideOnGroundCollision(Collision collision)
+    private void ExitGlideOnGroundCollision(Collision collision)
     {
         if (!isGliding || collision == null)
             return;
