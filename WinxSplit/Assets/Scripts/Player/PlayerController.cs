@@ -246,8 +246,8 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        moveX = GetAxisFromKeyboard(Key.D, Key.A, Key.RightArrow, Key.LeftArrow);
-        moveZ = GetAxisFromKeyboard(Key.W, Key.S, Key.UpArrow, Key.DownArrow);
+        moveX = AxisFromKeyboard(Key.D, Key.A, Key.RightArrow, Key.LeftArrow);
+        moveZ = AxisFromKeyboard(Key.W, Key.S, Key.UpArrow, Key.DownArrow);
         // UpdateFootsteps(move.sqrMagnitude > 0.01f && isGrounded);
     }
 
