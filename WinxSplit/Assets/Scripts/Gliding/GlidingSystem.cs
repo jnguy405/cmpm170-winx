@@ -8,6 +8,8 @@ public class GlidingSystem : MonoBehaviour
 {
     [Header("Glide State")]
     [SerializeField] private bool isGliding;
+    [SerializeField] private LayerMask groundMask = ~0;
+    [SerializeField] private float minGroundNormalY = 0.2f;
 
     [Header("Mouse steering")]
     [SerializeField] private float mouseSensitivity = 2f;
@@ -158,6 +160,9 @@ public class GlidingSystem : MonoBehaviour
         if (rb == null)
             return;
 
+        if (!isGliding)
+            return;
+
         // Uses Euler angles to rotate the glider to the target orientation
         Quaternion targetOrient = Quaternion.Euler(0f, yaw, 0f) * Quaternion.Euler(pitch, 0f, roll);
         float maxStep = steerMaxDegreesPerSecond <= 1e-5f
@@ -166,6 +171,35 @@ public class GlidingSystem : MonoBehaviour
         rb.MoveRotation(Quaternion.RotateTowards(rb.rotation, targetOrient, maxStep));
 
         ApplyPaperGlideForces();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        TryExitGlideOnGroundCollision(collision);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        TryExitGlideOnGroundCollision(collision);
+    }
+
+    private void TryExitGlideOnGroundCollision(Collision collision)
+    {
+        if (!isGliding || collision == null)
+            return;
+
+        if ((groundMask.value & (1 << collision.gameObject.layer)) == 0)
+            return;
+
+        for (int i = 0; i < collision.contactCount; i++)
+        {
+            ContactPoint contact = collision.GetContact(i);
+            if (contact.normal.y >= minGroundNormalY)
+            {
+                isGliding = false;
+                return;
+            }
+        }
     }
 
     // Apply the paper glide forces to the glider

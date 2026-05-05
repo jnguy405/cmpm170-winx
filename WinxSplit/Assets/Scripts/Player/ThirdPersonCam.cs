@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+
+// Cite: Cursor help with rotation and collision input
 
 public class ThirdPersonCam : MonoBehaviour
 {
@@ -95,8 +98,16 @@ public class ThirdPersonCam : MonoBehaviour
 
     private void HandleMouseLook()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        Mouse mouse = Mouse.current;
+        if (mouse == null)
+        {
+            return;
+        }
+
+        Vector2 delta = mouse.delta.ReadValue();
+        const float mouseScale = 0.02f;
+        float mouseX = delta.x * mouseScale;
+        float mouseY = delta.y * mouseScale;
 
         yaw += mouseX * yawSpeed * Time.deltaTime;
 
