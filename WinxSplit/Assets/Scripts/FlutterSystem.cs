@@ -1,156 +1,124 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+// Third-person paper-glider: mouse steers yaw / pitch / light roll on the Rigidbody.
+// Aerodynamics: drag along velocity, lift with speed, extra push when diving.
 public class GlidingSystem : MonoBehaviour
 {
-    [SerializeField] private float BaseSpeed = 30f;
-    [SerializeField] private float MaxThrustSpeed = 120f;
-    [Tooltip("Minimum speed (m/s) before full glide drag is applied; glide force still applies below this.")]
-    [SerializeField] private float MinThrustSpeed = 2f;
-    [SerializeField] private float ThrustFactor = 40f;
-    [SerializeField] private float DragFactor = 2f;
-    [SerializeField] private float MinDrag = 0.5f;
-    [SerializeField] private float RotationSpeed;
-    [SerializeField] private float TiltStrength = 90;
-    [SerializeField] private float LowPercent = 0.1f, HighPercent = 1;
+    [Header("Mouse steering")]
+    [SerializeField] private float mouseSensitivity = 2f;
+    [SerializeField] private float maxPitch = 55f;
+    [SerializeField] private float maxRoll = 45f;
+    [Tooltip("How strongly horizontal mouse banks the wings toward that side.")]
+    [SerializeField] private float rollBankStrength = 42f;
+    [SerializeField] private float rollEaseSpeed = 10f;
 
-    [Header("Camera")]
-    [Tooltip("The transform whose yaw/pitch the player should match — usually the same GameObject that has CameraTracking (your camera rig), not the mesh.")]
-    [SerializeField] private Transform cameraOrientationSource;
-    
-    private float CurrentThrustSpeed;
-    private float TiltValue, LerpValue;
+    [Header("Paper glide — forces (Acceleration)")]
+    [SerializeField] private float quadraticDrag = 0.7f;
+    [SerializeField] private float liftPerSpeed = 3.5f;
+    [SerializeField] private float stallSpeed = 3.5f;
+    [SerializeField] private float diveBoost = 12f;
 
-    private Transform CameraTransform;
-    private Rigidbody Rb;
+    private Rigidbody rb;
+    private float yaw;
+    private float pitch;
+    private float roll;
 
-    // Transform that actually moves with physics — use for camera follow when Rigidbody is not on the same object as GlidingSystem.
     public static Transform GetPhysicsFollowTransform(GlidingSystem glider)
     {
         if (glider == null)
             return null;
 
-        Rigidbody rb = glider.GetComponent<Rigidbody>()
+        Rigidbody found = glider.GetComponent<Rigidbody>()
             ?? glider.GetComponentInChildren<Rigidbody>()
             ?? glider.GetComponentInParent<Rigidbody>();
 
-        return rb != null ? rb.transform : glider.transform;
+        return found != null ? found.transform : glider.transform;
     }
-
-    private Transform BodyTransform => Rb != null ? Rb.transform : transform;
 
     private void Awake()
     {
-        ResolveRigidbody();
+        rb = GetComponent<Rigidbody>()
+            ?? GetComponentInChildren<Rigidbody>()
+            ?? GetComponentInParent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.useGravity = true;
+            rb.linearDamping = 0.05f;
+            rb.angularDamping = 3f;
+        }
     }
 
     private void Start()
     {
-        if (cameraOrientationSource != null)
-            CameraTransform = cameraOrientationSource;
-        else if (Camera.main != null)
+        if (rb == null)
         {
-            Transform cam = Camera.main.transform;
-            CameraTransform = cam.parent != null ? cam.parent : cam;
+            Debug.LogWarning($"{nameof(GlidingSystem)} on '{name}': add a Rigidbody.", this);
+            return;
         }
 
-        ResolveRigidbody();
+        if (rb.isKinematic)
+            Debug.LogWarning($"{nameof(GlidingSystem)} on '{name}': Rigidbody is kinematic.", this);
 
-        if (MaxThrustSpeed <= 0f)
-            MaxThrustSpeed = 120f;
-        if (ThrustFactor <= 0f)
-            ThrustFactor = 40f;
-        if (DragFactor <= 0f)
-            DragFactor = 2f;
+        Vector3 flat = transform.forward;
+        flat.y = 0f;
+        if (flat.sqrMagnitude > 1e-4f)
+            yaw = Quaternion.LookRotation(flat.normalized, Vector3.up).eulerAngles.y;
 
-        CurrentThrustSpeed = Mathf.Clamp(BaseSpeed, 0f, MaxThrustSpeed);
-
-        if (CameraTransform == null)
-            Debug.LogWarning(
-                $"{nameof(GlidingSystem)} on '{name}': drag the camera rig into Camera Orientation Source (same object as CameraTracking), or ensure a camera is tagged MainCamera.",
-                this);
-
-        if (Rb == null)
-            Debug.LogWarning(
-                $"{nameof(GlidingSystem)} on '{name}': add a Rigidbody on this object or a parent/child so the prefab moves with physics.",
-                this);
-    }
-
-    private void ResolveRigidbody()
-    {
-        Rb = GetComponent<Rigidbody>()
-            ?? GetComponentInChildren<Rigidbody>()
-            ?? GetComponentInParent<Rigidbody>();
-    }
-
-    private void FixedUpdate()
-    {
-        GlidingMovement();
+        float x = transform.eulerAngles.x;
+        if (x > 180f)
+            x -= 360f;
+        pitch = Mathf.Clamp(x, -maxPitch, maxPitch);
     }
 
     private void Update()
     {
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
-        {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
 
-        ManageRotation();
-    }
-
-    private void GlidingMovement() 
-    {
-        if (Rb == null)
+        if (Mouse.current == null || rb == null)
             return;
 
-        Transform body = BodyTransform;
-        float pitchInDeg = body.eulerAngles.x % 360;
-        float pitchInRads = body.eulerAngles.x * Mathf.Deg2Rad;
-        float mappedPitch = -Mathf.Sin(pitchInRads);
-        float offsetMappedPitch = Mathf.Cos(pitchInRads) * DragFactor;
-        float accelerationPercent = pitchInDeg >= 300f ? LowPercent : HighPercent; 
-        Vector3 glidingForce = -Vector3.forward * CurrentThrustSpeed;
+        Vector2 d = Mouse.current.delta.ReadValue();
+        const float pixelScale = 0.02f;
+        float s = mouseSensitivity * pixelScale;
 
-        CurrentThrustSpeed += mappedPitch * accelerationPercent * ThrustFactor * Time.fixedDeltaTime;
-        CurrentThrustSpeed = Mathf.Clamp(CurrentThrustSpeed, 0f, MaxThrustSpeed);
+        yaw += d.x * s;
+        pitch = Mathf.Clamp(pitch - d.y * s, -maxPitch, maxPitch);
 
-        if (CurrentThrustSpeed > 0.001f)
-            Rb.AddRelativeForce(glidingForce);
-
-        if (Rb.linearVelocity.magnitude >= MinThrustSpeed)
-            Rb.linearDamping = Mathf.Clamp(offsetMappedPitch, MinDrag, DragFactor);
-        else
-            Rb.linearDamping = MinDrag;
+        float desiredRoll = Mathf.Clamp(-d.x * s * rollBankStrength, -maxRoll, maxRoll);
+        float rollAlpha = 1f - Mathf.Exp(-rollEaseSpeed * Time.deltaTime);
+        roll = Mathf.Lerp(roll, desiredRoll, rollAlpha);
     }
-    private void ManageRotation() 
+
+    private void FixedUpdate()
     {
-        if (CameraTransform == null)
+        if (rb == null)
             return;
 
-        float mouseX = 0f;
-        if (Mouse.current != null)
-        {
-            const float pixelScale = 0.02f;
-            mouseX = Mouse.current.delta.ReadValue().x * pixelScale;
-        }
+        Quaternion orientation = Quaternion.Euler(0f, yaw, 0f) * Quaternion.Euler(pitch, 0f, roll);
+        rb.MoveRotation(orientation);
 
-        TiltValue += mouseX * TiltStrength;
+        ApplyPaperGlideForces();
+    }
 
-        if (Mathf.Abs(mouseX) < 1e-4f)
-        {
-            TiltValue = Mathf.Lerp(TiltValue, 0, LerpValue);
-            LerpValue += Time.deltaTime;
-        }
-        else 
-        {
-            LerpValue = 0;
-        }
+    private void ApplyPaperGlideForces()
+    {
+        Vector3 v = rb.linearVelocity;
+        float speed = v.magnitude;
+        Vector3 forward = transform.forward;
 
-        Quaternion targetRotation = Quaternion.Euler(CameraTransform.eulerAngles.x, CameraTransform.eulerAngles.y, TiltValue);
-        Transform body = BodyTransform;
-        body.rotation = Quaternion.Lerp(body.rotation, targetRotation, RotationSpeed * Time.deltaTime);
+        if (speed > 0.01f)
+            rb.AddForce(-quadraticDrag * speed * v, ForceMode.Acceleration);
+
+        float air = Mathf.Clamp01(speed / Mathf.Max(0.01f, stallSpeed));
+        float lift = liftPerSpeed * speed * air * Mathf.Clamp01(Vector3.Dot(transform.up, Vector3.up));
+        rb.AddForce(Vector3.up * lift, ForceMode.Acceleration);
+
+        float dive = Mathf.Max(0f, Vector3.Dot(forward, Vector3.down));
+        rb.AddForce(forward * (diveBoost * dive * air), ForceMode.Acceleration);
     }
 }

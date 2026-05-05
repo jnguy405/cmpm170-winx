@@ -1,81 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+// Third-person chase: camera offset is entirely in the player’s local space (it rides pitch/yaw/roll with them).
+// Always looks at a focus point on the glider so the player stays centered — no separate mouse orbit.
 public class CameraTracking : MonoBehaviour
 {
-    [Tooltip("Player root (Rigidbody / GlidingSystem). Camera rig follows this plus Offset.")]
-    [SerializeField] private Transform PlayerTransform;
+    [Tooltip("Glider / Rigidbody transform. Auto-filled from GlidingSystem if empty.")]
+    [SerializeField] private Transform player;
 
-    [SerializeField] private float SmoothTime = 0.15f;
-    [SerializeField] private float Sensitivity = 2f;
-    [SerializeField] private float MaxViewRange = 60f;
-    private float mouseX, mouseY;
+    [Tooltip("Where the camera aims (player-local). Typically chest / nose height + slightly forward.")]
+    [SerializeField] private Vector3 lookFocusLocal = new Vector3(0f, 0.7f, 30f);
 
-    [Tooltip("Typical third-person: slightly above and behind the player (e.g. 0, 1.5, -4).")]
-    [SerializeField] private Vector3 Offset;
+    [Tooltip("Camera position in player-local space: Y up, Z negative = behind the glider.")]
+    [SerializeField] private Vector3 cameraOffsetLocal = new Vector3(0f, 1.3f, -5f);
 
-    [Tooltip("If empty, finds the first GlidingSystem and follows its Rigidbody transform (so it matches the mesh that actually moves).")]
-    [SerializeField] private bool autoFindPlayerIfMissing = true;
+    [SerializeField] private bool autoFindPlayer = true;
 
-    private Vector3 CurrentVelocity;
-    private bool _warnedMissingPlayer;
+    private bool warnedMissing;
 
     private void Awake()
     {
-        if (PlayerTransform == null && autoFindPlayerIfMissing)
+        if (player == null && autoFindPlayer)
         {
             GlidingSystem glider = Object.FindAnyObjectByType<GlidingSystem>();
             if (glider != null)
-                PlayerTransform = GlidingSystem.GetPhysicsFollowTransform(glider);
+                player = GlidingSystem.GetPhysicsFollowTransform(glider);
         }
     }
 
     private void LateUpdate()
     {
-        FollowTargetTransform();
-    }
-
-    private void Update()
-    {
-        CameraRotation();
-    }
-
-    private void FollowTargetTransform()
-    {
-        if (PlayerTransform == null)
+        if (player == null)
         {
-            if (!_warnedMissingPlayer)
+            if (!warnedMissing)
             {
-                _warnedMissingPlayer = true;
-                Debug.LogWarning($"{nameof(CameraTracking)} on '{name}': assign Player Transform to the player root.", this);
+                warnedMissing = true;
+                Debug.LogWarning($"{nameof(CameraTracking)} on '{name}': assign Player or add {nameof(GlidingSystem)}.", this);
             }
 
             return;
         }
 
-        Vector3 desiredPosition = PlayerTransform.position + Offset;
-        float smooth = Mathf.Max(SmoothTime, 0.01f);
-        Vector3 positionInterpolation = Vector3.SmoothDamp(transform.position, desiredPosition, ref CurrentVelocity, smooth);
+        Vector3 focus = player.position + player.TransformDirection(lookFocusLocal);
+        Vector3 camPos = player.position + player.TransformDirection(cameraOffsetLocal);
 
-        transform.position = positionInterpolation;
-    }
-    private void CameraRotation()
-    {
-        if (Mouse.current == null)
-            return;
+        transform.position = camPos;
 
-        Vector2 delta = Mouse.current.delta.ReadValue();
-        // Mouse delta is in pixels; scale so existing Sensitivity values stay in a usable range vs. legacy GetAxisRaw.
-        const float pixelToAxisScale = 0.02f;
-        float scale = Sensitivity * pixelToAxisScale;
-        mouseX += delta.y * scale;
-        mouseY += delta.x * scale;
-        float clampedX = Mathf.Clamp(mouseX, -MaxViewRange, MaxViewRange);
-
-        Quaternion targetRotation = Quaternion.Euler(clampedX, mouseY, transform.eulerAngles.z);
-        transform.rotation = targetRotation;
+        Vector3 toFocus = focus - transform.position;
+        if (toFocus.sqrMagnitude > 1e-6f)
+            transform.rotation = Quaternion.LookRotation(toFocus.normalized, player.up);
     }
 }
