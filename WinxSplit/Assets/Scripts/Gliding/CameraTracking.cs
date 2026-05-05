@@ -7,44 +7,43 @@ public class CameraTracking : MonoBehaviour
 {
     [SerializeField] private Transform player;
 
-    [SerializeField] private Vector3 lookFocusLocal = new Vector3(0f, 0.85f, 0.25f);        // Distance from the glider to the focus point
+    [SerializeField] private Vector3 lookFocusLocal = new Vector3(0f, 1.55f, 0f);            // Distance from the glider to the focus point
 
-    [SerializeField] private Vector3 cameraOffsetLocal = new Vector3(0f, 1.35f, -6f);       // Distance from the glider to the camera
+    [SerializeField] private Vector3 cameraOffsetLocal = new Vector3(0f, 1.35f, -2.35f);      // Distance from the glider to the camera
 
-    [SerializeField] private bool autoFindPlayer = true;                                    // If true, the camera will automatically find the player
+    [SerializeField] private float positionSmooth = 8f;
+    [SerializeField] private float rotationSmooth = 10f;
 
-    private bool warnedMissing;
-
-    private void Awake()
+    private void OnEnable()
     {
-        if (player == null && autoFindPlayer)
-        {
-            GlidingSystem glider = Object.FindAnyObjectByType<GlidingSystem>();
-            if (glider != null)
-                player = GlidingSystem.GetPhysicsFollowTransform(glider);
-        }
+        UpdateCameraPose();
     }
 
     // Late update the camera and set the position and rotation of the camera
     private void LateUpdate()
     {
+        UpdateCameraPose();
+    }
+
+    private void UpdateCameraPose()
+    {
         if (player == null)
         {
-            if (!warnedMissing)
-            {
-                warnedMissing = true;
-                Debug.LogWarning($"{nameof(CameraTracking)} on '{name}': assign Player or add {nameof(GlidingSystem)}.", this);
-            }
-
             return;
         }
 
         // Calculate the focus point and the camera position
         Vector3 focus = player.position + player.TransformDirection(lookFocusLocal);
-        transform.position = player.position + player.TransformDirection(cameraOffsetLocal);
+        Vector3 desiredPosition = player.position + player.TransformDirection(cameraOffsetLocal);
+        float posAlpha = 1f - Mathf.Exp(-positionSmooth * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, posAlpha);
 
         Vector3 toFocus = focus - transform.position;
         if (toFocus.sqrMagnitude > 1e-6f)
-            transform.rotation = Quaternion.LookRotation(toFocus.normalized, player.up);
+        {
+            Quaternion desiredRotation = Quaternion.LookRotation(toFocus.normalized, player.up);
+            float rotAlpha = 1f - Mathf.Exp(-rotationSmooth * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotAlpha);
+        }
     }
 }

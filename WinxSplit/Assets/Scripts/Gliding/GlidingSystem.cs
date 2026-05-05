@@ -6,6 +6,11 @@ using UnityEngine.SceneManagement;
 // Aerodynamics: drag along velocity, lift with speed, extra push when diving.
 public class GlidingSystem : MonoBehaviour
 {
+    [Header("Glide State")]
+    [SerializeField] private bool isGliding;
+    [SerializeField] private LayerMask groundMask = ~0;
+    [SerializeField] private float minGroundNormalY = 0.2f;
+
     [Header("Mouse steering")]
     [SerializeField] private float mouseSensitivity = 2f;
     [SerializeField] private float maxPitch = 55f;                      // Maximum pitch of the glider (angle of the glider in the y-axis)
@@ -44,6 +49,8 @@ public class GlidingSystem : MonoBehaviour
     private float verticalInputSmoothed;                       // Smoothed vertical input (how smooth the vertical input is)
     private float verticalInputVel;                            // Velocity of the vertical input (how fast the vertical input is applied)
 
+    public bool IsGliding => isGliding;
+
     // Get the transform of the physics follow object to follow the glider
     public static Transform GetPhysicsFollowTransform(GlidingSystem glider)
     {
@@ -78,12 +85,8 @@ public class GlidingSystem : MonoBehaviour
     {
         if (rb == null)
         {
-            Debug.LogWarning($"{nameof(GlidingSystem)} on '{name}': add a Rigidbody.", this);
             return;
         }
-
-        if (rb.isKinematic)
-            Debug.LogWarning($"{nameof(GlidingSystem)} on '{name}': Rigidbody is kinematic.", this);
 
         Vector3 flat = transform.forward;
         flat.y = 0f;
@@ -153,6 +156,9 @@ public class GlidingSystem : MonoBehaviour
         if (rb == null)
             return;
 
+        if (!isGliding)
+            return;
+
         // Uses Euler angles to rotate the glider to the target orientation
         Quaternion targetOrient = Quaternion.Euler(0f, yaw, 0f) * Quaternion.Euler(pitch, 0f, roll);
         float maxStep = steerMaxDegreesPerSecond <= 1e-5f
@@ -161,6 +167,35 @@ public class GlidingSystem : MonoBehaviour
         rb.MoveRotation(Quaternion.RotateTowards(rb.rotation, targetOrient, maxStep));
 
         ApplyPaperGlideForces();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        ExitGlideOnGroundCollision(collision);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        ExitGlideOnGroundCollision(collision);
+    }
+
+    private void ExitGlideOnGroundCollision(Collision collision)
+    {
+        if (!isGliding || collision == null)
+            return;
+
+        if ((groundMask.value & (1 << collision.gameObject.layer)) == 0)
+            return;
+
+        for (int i = 0; i < collision.contactCount; i++)
+        {
+            ContactPoint contact = collision.GetContact(i);
+            if (contact.normal.y >= minGroundNormalY)
+            {
+                isGliding = false;
+                return;
+            }
+        }
     }
 
     // Apply the paper glide forces to the glider
@@ -212,5 +247,10 @@ public class GlidingSystem : MonoBehaviour
             Mathf.Max(1e-5f, smoothTime),
             Mathf.Infinity,
             deltaTime);
+    }
+
+    public void SetGliding(bool value)
+    {
+        isGliding = value;
     }
 }
