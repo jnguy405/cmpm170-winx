@@ -7,11 +7,11 @@ public class CameraTracking : MonoBehaviour
 {
     [SerializeField] private Transform player;
 
-    [SerializeField] private Vector3 lookFocusLocal = new Vector3(0f, 0.85f, 0.25f);
+    [SerializeField] private Vector3 lookFocusLocal = new Vector3(0f, 0.85f, 0.25f);        // Distance from the glider to the focus point
 
-    [SerializeField] private Vector3 cameraOffsetLocal = new Vector3(0f, 1.35f, -6f);
+    [SerializeField] private Vector3 cameraOffsetLocal = new Vector3(0f, 1.35f, -6f);       // Distance from the glider to the camera
 
-    [SerializeField] private bool autoFindPlayer = true;
+    [SerializeField] private bool autoFindPlayer = true;                                    // If true, the camera will automatically find the player
 
     private bool warnedMissing;
 
@@ -25,6 +25,7 @@ public class CameraTracking : MonoBehaviour
         }
     }
 
+    // Late update the camera and set the position and rotation of the camera
     private void LateUpdate()
     {
         if (player == null)
@@ -38,6 +39,7 @@ public class CameraTracking : MonoBehaviour
             return;
         }
 
+        // Calculate the focus point and the camera position
         Vector3 focus = player.position + player.TransformDirection(lookFocusLocal);
         transform.position = player.position + player.TransformDirection(cameraOffsetLocal);
 
