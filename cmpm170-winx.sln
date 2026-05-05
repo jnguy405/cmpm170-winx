@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinxSplit", "WinxSplit", "{FF6B427E-0436-9DB2-39F7-0C1880A4493A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "WinxSplit\Assembly-CSharp-Editor.csproj", "{5B83853C-F457-A178-3787-CC2CD251C595}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "WinxSplit\Assembly-CSharp.csproj", "{B85AD420-DD02-00D8-8CA5-0F539BF9F8ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B83853C-F457-A178-3787-CC2CD251C595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B83853C-F457-A178-3787-CC2CD251C595}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B83853C-F457-A178-3787-CC2CD251C595}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B83853C-F457-A178-3787-CC2CD251C595}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B85AD420-DD02-00D8-8CA5-0F539BF9F8ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85AD420-DD02-00D8-8CA5-0F539BF9F8ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B85AD420-DD02-00D8-8CA5-0F539BF9F8ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B85AD420-DD02-00D8-8CA5-0F539BF9F8ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5B83853C-F457-A178-3787-CC2CD251C595} = {FF6B427E-0436-9DB2-39F7-0C1880A4493A}
+		{B85AD420-DD02-00D8-8CA5-0F539BF9F8ED} = {FF6B427E-0436-9DB2-39F7-0C1880A4493A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {227B9E2E-3B64-425D-AF76-AFB2A426B5D3}
+	EndGlobalSection
+EndGlobal
