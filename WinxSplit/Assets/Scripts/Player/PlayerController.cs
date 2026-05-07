@@ -47,11 +47,13 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool wasGrounded;
     private bool wasGliding;
+    private bool hasSnappedAfterGlide;
     private bool isCrouching;
 
     // Game State
     private bool gamePaused;
     private float baseScaleY;
+    private Quaternion modelRootBaseLocalRotation;
     private const float groundedVerticalClamp = 0f;
 
     // Camera
@@ -96,6 +98,7 @@ public class PlayerController : MonoBehaviour
         {
             modelRoot = transform;
         }
+        modelRootBaseLocalRotation = modelRoot.localRotation;
 
         // Checks for the player's physics collider
         if (physicsCollider == null)
@@ -124,6 +127,7 @@ public class PlayerController : MonoBehaviour
         isGrounded = groundCheck != null && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask); // checks if the player is grounded
         wasGrounded = isGrounded;                                                                                  // the player was grounded last frame
         wasGliding = glidingSystem != null && glidingSystem.IsGliding;
+        hasSnappedAfterGlide = !wasGliding;
     }
 
     private void Update()
@@ -190,6 +194,7 @@ public class PlayerController : MonoBehaviour
         if (glidingSystem != null && glidingSystem.IsGliding)
         {
             jumpQueued = false;
+            pendingYawDelta = 0f;
             return;
         }
 
@@ -202,6 +207,12 @@ public class PlayerController : MonoBehaviour
     // Handles the mouse look input for the player (yaw rotation)
     private void HandleMouseLookInput()
     {
+        if (glidingSystem != null && glidingSystem.IsGliding)
+        {
+            pendingYawDelta = 0f;
+            return;
+        }
+
         Mouse mouse = Mouse.current;
         if (mouse == null)
         {
@@ -234,6 +245,11 @@ public class PlayerController : MonoBehaviour
     private void UpdateGroundedState()
     {
         bool currentlyGliding = glidingSystem != null && glidingSystem.IsGliding;
+        bool glideEntered = !wasGliding && currentlyGliding;
+        if (glideEntered)
+        {
+            hasSnappedAfterGlide = false;
+        }
         bool sphereGrounded = groundCheck != null && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
         bool collisionGrounded = IsGroundedByCollisionProbe();
         isGrounded = sphereGrounded || collisionGrounded;
@@ -254,21 +270,26 @@ public class PlayerController : MonoBehaviour
         }
 
         bool glideExited = wasGliding && !currentlyGliding;
-        if (glideExited || isGrounded)
+        bool justLanded = isGrounded && !wasGrounded;
+        bool shouldSnapAfterGroundedGlideExit = isGrounded && !currentlyGliding && !hasSnappedAfterGlide;
+        if (glideExited || (justLanded && wasGliding) || shouldSnapAfterGroundedGlideExit)
         {
-            ResetUprightAndFreezeRotationY();
+            ResetUprightAndFacing();
+            hasSnappedAfterGlide = true;
         }
 
         wasGliding = currentlyGliding;
         wasGrounded = isGrounded;
     }
 
-    private void ResetUprightAndFreezeRotationY()
+    private void ResetUprightAndFacing()
     {
-        Vector3 euler = rb.rotation.eulerAngles;
-        Quaternion uprightRotation = Quaternion.Euler(0f, euler.y, 0f);
-        rb.MoveRotation(uprightRotation);
-        rb.constraints |= RigidbodyConstraints.FreezeRotationY;
+        // Keep body/camera yaw continuity; only reset visual mesh orientation after glide.
+        if (modelRoot != null && modelRoot != transform)
+        {
+            modelRoot.localRotation = modelRootBaseLocalRotation;
+        }
+        pendingYawDelta = 0f;
     }
 
     // Resolves the vertical velocity for the player (applies gravity and jump height)
@@ -422,6 +443,7 @@ public class PlayerController : MonoBehaviour
         }
 
         jumpQueued = false;
+        pendingYawDelta = 0f;
     }
 
 

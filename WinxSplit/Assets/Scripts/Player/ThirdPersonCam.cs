@@ -153,4 +153,9 @@ public class ThirdPersonCam : MonoBehaviour
 
     // Sets the mouse look enabled or disabled
     public void SetMouseLookEnabled(bool enabled) => mouseLookEnabled = enabled;
+
+    public void SnapYawTo(float worldYaw)
+    {
+        yaw = worldYaw;
+    }
 }
