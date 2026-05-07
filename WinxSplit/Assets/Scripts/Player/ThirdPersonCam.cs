@@ -33,7 +33,9 @@ public class ThirdPersonCam : MonoBehaviour
     private float yaw;
     private float pitch;
     private bool mouseLookEnabled = true;
+    public float CurrentYaw => yaw;
 
+    // Checks the current yaw of the camera and sets it to the target's yaw
     private void Awake()
     {
         Vector3 currentAngles = transform.eulerAngles;
@@ -41,6 +43,7 @@ public class ThirdPersonCam : MonoBehaviour
         pitch = NormalizePitch(currentAngles.x);
     }
 
+    // Looks for the cursor to be locked and hidden
     private void Start()
     {
         if (lockCursor)
@@ -50,6 +53,7 @@ public class ThirdPersonCam : MonoBehaviour
         }
     }
 
+    // Updates the camera position and rotation
     private void LateUpdate()
     {
         if (target == null)
@@ -61,7 +65,12 @@ public class ThirdPersonCam : MonoBehaviour
         {
             HandleMouseLook();
         }
+        else
+        {
+            yaw = target.eulerAngles.y;
+        }
 
+        // Calculates the focus point and orbit rotation (mouse look)
         Vector3 focusPoint = target.position + focusOffset;
         Quaternion orbitRotation = Quaternion.Euler(pitch, yaw, 0f);
         Vector3 desiredPosition = focusPoint - orbitRotation * Vector3.forward * distance;
@@ -71,18 +80,21 @@ public class ThirdPersonCam : MonoBehaviour
             desiredPosition = ResolveCollision(focusPoint, desiredPosition);
         }
 
+        // Smooths the camera position and rotation
         float posAlpha = 1f - Mathf.Exp(-positionSmooth * Time.deltaTime);
         transform.position = Vector3.Lerp(transform.position, desiredPosition, posAlpha);
 
         Vector3 lookDirection = focusPoint - transform.position;
         if (lookDirection.sqrMagnitude > 1e-6f)
         {
+            // Grabs the look direction and slerps the camera rotation to it
             Quaternion lookRotation = Quaternion.LookRotation(lookDirection.normalized, Vector3.up);
             float rotAlpha = 1f - Mathf.Exp(-rotationSmooth * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotAlpha);
         }
     }
 
+    // Mouse look input for camera rotation base on the mouse delta
     private void HandleMouseLook()
     {
         Mouse mouse = Mouse.current;
@@ -93,7 +105,7 @@ public class ThirdPersonCam : MonoBehaviour
 
         Vector2 delta = mouse.delta.ReadValue();
         const float mouseScale = 0.02f;
-        float mouseX = -delta.x * mouseScale;
+        float mouseX = delta.x * mouseScale;
         float mouseY = delta.y * mouseScale;
 
         yaw += mouseX * yawSpeed * Time.deltaTime;
@@ -102,6 +114,7 @@ public class ThirdPersonCam : MonoBehaviour
         pitch = Mathf.Clamp(pitch + pitchInput * pitchSpeed * Time.deltaTime, minPitch, maxPitch);
     }
 
+    // Resolves the collision between the camera and the environment
     private Vector3 ResolveCollision(Vector3 focusPoint, Vector3 desiredPosition)
     {
         Vector3 toCamera = desiredPosition - focusPoint;
@@ -127,6 +140,7 @@ public class ThirdPersonCam : MonoBehaviour
         return desiredPosition;
     }
 
+    // Normalizes the pitch to be between -180 and 180 (pitch is the up/down rotation)
     private static float NormalizePitch(float rawPitch)
     {
         if (rawPitch > 180f)
@@ -137,8 +151,6 @@ public class ThirdPersonCam : MonoBehaviour
         return rawPitch;
     }
 
-    public void SetMouseLookEnabled(bool enabled)
-    {
-        mouseLookEnabled = enabled;
-    }
+    // Sets the mouse look enabled or disabled
+    public void SetMouseLookEnabled(bool enabled) => mouseLookEnabled = enabled;
 }
