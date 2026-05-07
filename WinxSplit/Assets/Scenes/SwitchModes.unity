@@ -453,7 +453,7 @@ PrefabInstance:
       addedObject: {fileID: 1468265626}
     - targetCorrespondingSourceObject: {fileID: 2675009141182029121, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1468265630}
+      addedObject: {fileID: 1468265632}
   m_SourcePrefab: {fileID: 100100000, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
 --- !u!4 &1122594041 stripped
 Transform:
@@ -610,7 +610,7 @@ MonoBehaviour:
   glidingSystem: {fileID: 773281354}
   camModeSwitch: {fileID: 1889591564}
   rb: {fileID: 773281356}
-  physicsCollider: {fileID: 1468265630}
+  physicsCollider: {fileID: 0}
   groundAcceleration: 35
   groundDeceleration: 45
   airAcceleration: 12
@@ -619,8 +619,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
---- !u!65 &1468265630
-BoxCollider:
+--- !u!136 &1468265632
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -637,9 +637,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.3, y: 1.2, z: 0.5}
-  m_Center: {x: 0, y: 0.6, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Height: 1.7
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &1889591563
 GameObject:
   m_ObjectHideFlags: 0
