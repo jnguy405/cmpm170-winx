@@ -93,7 +93,7 @@ public class ThirdPersonCam : MonoBehaviour
 
         Vector2 delta = mouse.delta.ReadValue();
         const float mouseScale = 0.02f;
-        float mouseX = -delta.x * mouseScale;
+        float mouseX = delta.x * mouseScale;
         float mouseY = delta.y * mouseScale;
 
         yaw += mouseX * yawSpeed * Time.deltaTime;

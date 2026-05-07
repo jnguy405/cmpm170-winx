@@ -112,7 +112,7 @@ public class GlidingSystem : MonoBehaviour
         const float pixelScale = 0.02f;
         float s = mouseSensitivity * pixelScale;
 
-        float rawHorizontal = -d.x * s;
+        float rawHorizontal = d.x * s;
         float rawVertical = d.y * s;
 
         // Smooth the horizontal input
