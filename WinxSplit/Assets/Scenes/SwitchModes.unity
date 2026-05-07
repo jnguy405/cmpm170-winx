@@ -610,7 +610,7 @@ MonoBehaviour:
   glidingSystem: {fileID: 773281354}
   camModeSwitch: {fileID: 1889591564}
   rb: {fileID: 773281356}
-  physicsCollider: {fileID: 0}
+  physicsCollider: {fileID: 1468265632}
   groundAcceleration: 35
   groundDeceleration: 45
   airAcceleration: 12
