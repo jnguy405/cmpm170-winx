@@ -158,6 +158,12 @@ public class PlayerController : MonoBehaviour
             ToggleGlideMode();
         }
 
+        bool resetViewPressed = keyboard != null && keyboard.vKey.wasPressedThisFrame;
+        if (resetViewPressed)
+        {
+            ResetGroundedViewAndFacing();
+        }
+
         isSprinting = keyboard != null && keyboard.leftCtrlKey.isPressed;
 
         bool shouldCrouch = keyboard != null && keyboard.leftShiftKey.isPressed;
@@ -274,7 +280,7 @@ public class PlayerController : MonoBehaviour
         bool shouldSnapAfterGroundedGlideExit = isGrounded && !currentlyGliding && !hasSnappedAfterGlide;
         if (glideExited || (justLanded && wasGliding) || shouldSnapAfterGroundedGlideExit)
         {
-            ResetUprightAndFacing();
+            SnapToGroundAndResetPose();
             hasSnappedAfterGlide = true;
         }
 
@@ -290,6 +296,79 @@ public class PlayerController : MonoBehaviour
             modelRoot.localRotation = modelRootBaseLocalRotation;
         }
         pendingYawDelta = 0f;
+    }
+
+    private void ResetGroundedViewAndFacing()
+    {
+        if (rb == null)
+        {
+            return;
+        }
+
+        if (camModeSwitch != null)
+        {
+            camModeSwitch.SetGliding(false);
+        }
+        else if (glidingSystem != null)
+        {
+            glidingSystem.SetGliding(false);
+        }
+
+        SnapToGroundAndResetPose();
+    }
+
+    private void SnapToGroundAndResetPose()
+    {
+        if (TryGetGroundSnapPosition(out Vector3 snappedPosition))
+        {
+            rb.position = snappedPosition;
+        }
+
+        // Reset to player-forward as source of truth so third-person offset is truly behind the character.
+        float targetYaw = rb.rotation.eulerAngles.y;
+        rb.rotation = Quaternion.Euler(0f, targetYaw, 0f);
+        rb.angularVelocity = Vector3.zero;
+
+        ResetUprightAndFacing();
+        if (thirdPersonCam != null)
+        {
+            thirdPersonCam.ResetToDefaultAtYaw(targetYaw);
+        }
+
+        isGrounded = true;
+        wasGrounded = true;
+        jumpQueued = false;
+    }
+
+    private bool TryGetGroundSnapPosition(out Vector3 snappedPosition)
+    {
+        snappedPosition = rb.position;
+        if (physicsCollider == null)
+        {
+            return false;
+        }
+
+        Bounds bounds = physicsCollider.bounds;
+        float castHeight = Mathf.Max(1f, bounds.extents.y + 0.5f);
+        Vector3 castOrigin = bounds.center + Vector3.up * castHeight;
+        float castDistance = castHeight + Mathf.Max(0.5f, groundDistance + 1f);
+        float castRadius = Mathf.Max(0.05f, bounds.extents.x * 0.6f);
+
+        if (!Physics.SphereCast(
+                castOrigin,
+                castRadius,
+                Vector3.down,
+                out RaycastHit hit,
+                castDistance,
+                groundMask,
+                QueryTriggerInteraction.Ignore))
+        {
+            return false;
+        }
+
+        float colliderBottomOffset = bounds.center.y - bounds.min.y;
+        snappedPosition = new Vector3(rb.position.x, hit.point.y + colliderBottomOffset, rb.position.z);
+        return true;
     }
 
     // Resolves the vertical velocity for the player (applies gravity and jump height)
