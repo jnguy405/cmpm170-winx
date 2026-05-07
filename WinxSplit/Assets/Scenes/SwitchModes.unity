@@ -262,7 +262,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonCam
   target: {fileID: 1122594041}
   focusOffset: {x: 0, y: 1.6, z: 0}
-  autoFindPlayer: 1
   distance: 3
   yawSpeed: 180
   pitchSpeed: 120
@@ -384,6 +383,14 @@ PrefabInstance:
     - target: {fileID: 2675009141182029121, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
       propertyPath: m_Name
       value: Flutter (body)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3017098895884131664, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
+      propertyPath: m_AnimatePhysics
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3017098895884131664, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3338392216436705275, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
       propertyPath: m_LocalScale.x
@@ -599,14 +606,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   myCamera: {fileID: 1889591563}
   groundCheck: {fileID: 773281355}
+  modelRoot: {fileID: 773281355}
   glidingSystem: {fileID: 773281354}
   camModeSwitch: {fileID: 1889591564}
   rb: {fileID: 773281356}
   physicsCollider: {fileID: 1468265630}
-  walkSpeed: 5
-  sprintSpeed: 10
-  crouchSpeed: 2.5
+  walkSpeed: 10
+  sprintSpeed: 20
+  crouchSpeed: 5
+  turnSpeedDegrees: 720
   speedMulti: 1
+  groundAcceleration: 35
+  groundDeceleration: 45
+  airAcceleration: 12
+  airDeceleration: 8
   jumpHeight: 1.2
   gravity: -9.81
   groundDistance: 1
@@ -671,7 +684,6 @@ MonoBehaviour:
   switchCameraGameObjects: 1
   glidingSystem: {fileID: 773281354}
   isGliding: 0
-  autoFindReferences: 1
 --- !u!4 &1889591566
 Transform:
   m_ObjectHideFlags: 0
@@ -704,7 +716,6 @@ MonoBehaviour:
   player: {fileID: 1122594041}
   lookFocusLocal: {x: 0, y: 1.55, z: 0}
   cameraOffsetLocal: {x: 0, y: 1.35, z: -2.35}
-  autoFindPlayer: 1
   positionSmooth: 30
   rotationSmooth: 10
 --- !u!20 &1889591568
