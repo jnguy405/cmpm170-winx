@@ -134,6 +134,7 @@ public class PlayerController : MonoBehaviour
 
         UpdateGroundedState();
         HandleStateInput();
+        HandleJumpInput();
         HandleMouseLookInput();
         MovementInput();
         // UpdateAnimation();
@@ -144,7 +145,7 @@ public class PlayerController : MonoBehaviour
     private void HandleStateInput()
     {
         Keyboard keyboard = Keyboard.current;
-        bool glideTogglePressed = keyboard != null && keyboard.spaceKey.wasPressedThisFrame;
+        bool glideTogglePressed = keyboard != null && keyboard.gKey.wasPressedThisFrame;
 
         if (glideTogglePressed)
         {
@@ -157,6 +158,22 @@ public class PlayerController : MonoBehaviour
         if (shouldCrouch != isCrouching)
         {
             Crouch(shouldCrouch);
+        }
+    }
+
+    // Handles jump input with Space when not gliding
+    private void HandleJumpInput()
+    {
+        if (glidingSystem != null && glidingSystem.IsGliding)
+        {
+            return;
+        }
+
+        Keyboard keyboard = Keyboard.current;
+        bool jumpPressed = keyboard != null && keyboard.spaceKey.wasPressedThisFrame;
+        if (jumpPressed && isGrounded)
+        {
+            jumpQueued = true;
         }
     }
 
