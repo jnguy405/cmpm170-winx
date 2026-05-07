@@ -370,7 +370,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 2
 --- !u!1001 &1122594040
 PrefabInstance:
@@ -611,18 +611,11 @@ MonoBehaviour:
   camModeSwitch: {fileID: 1889591564}
   rb: {fileID: 773281356}
   physicsCollider: {fileID: 1468265630}
-  walkSpeed: 10
-  sprintSpeed: 20
-  crouchSpeed: 5
-  turnSpeedDegrees: 720
-  speedMulti: 1
   groundAcceleration: 35
   groundDeceleration: 45
   airAcceleration: 12
   airDeceleration: 8
   jumpHeight: 1.2
-  gravity: -9.81
-  groundDistance: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 8

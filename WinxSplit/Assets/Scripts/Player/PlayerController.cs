@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     private bool isWalking;
     private bool isGrounded;
     private bool wasGrounded;
+    private bool wasGliding;
     private bool isCrouching;
 
     // Game State
@@ -122,6 +123,7 @@ public class PlayerController : MonoBehaviour
 
         isGrounded = groundCheck != null && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask); // checks if the player is grounded
         wasGrounded = isGrounded;                                                                                  // the player was grounded last frame
+        wasGliding = glidingSystem != null && glidingSystem.IsGliding;
     }
 
     private void Update()
@@ -231,6 +233,7 @@ public class PlayerController : MonoBehaviour
     // Updates the grounded state for the player (checks if the player is grounded by sphere cast and collision probe)
     private void UpdateGroundedState()
     {
+        bool currentlyGliding = glidingSystem != null && glidingSystem.IsGliding;
         bool sphereGrounded = groundCheck != null && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
         bool collisionGrounded = IsGroundedByCollisionProbe();
         isGrounded = sphereGrounded || collisionGrounded;
@@ -238,9 +241,10 @@ public class PlayerController : MonoBehaviour
         if (isGrounded && !wasGrounded)
         {
             // Landing should always return from gliding to third-person mode.
-            if (glidingSystem != null && glidingSystem.IsGliding)
+            if (currentlyGliding && glidingSystem != null)
             {
                 glidingSystem.SetGliding(false);
+                currentlyGliding = false;
             }
 
             if (camModeSwitch != null)
@@ -249,7 +253,22 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        bool glideExited = wasGliding && !currentlyGliding;
+        if (glideExited || isGrounded)
+        {
+            ResetUprightAndFreezeRotationY();
+        }
+
+        wasGliding = currentlyGliding;
         wasGrounded = isGrounded;
+    }
+
+    private void ResetUprightAndFreezeRotationY()
+    {
+        Vector3 euler = rb.rotation.eulerAngles;
+        Quaternion uprightRotation = Quaternion.Euler(0f, euler.y, 0f);
+        rb.MoveRotation(uprightRotation);
+        rb.constraints |= RigidbodyConstraints.FreezeRotationY;
     }
 
     // Resolves the vertical velocity for the player (applies gravity and jump height)
