@@ -32,6 +32,8 @@ public class ThirdPersonCam : MonoBehaviour
 
     private float yaw;
     private float pitch;
+    private float defaultPitch;
+    private float defaultDistance;
     private bool mouseLookEnabled = true;
     public float CurrentYaw => yaw;
 
@@ -41,6 +43,8 @@ public class ThirdPersonCam : MonoBehaviour
         Vector3 currentAngles = transform.eulerAngles;
         yaw = currentAngles.y;
         pitch = NormalizePitch(currentAngles.x);
+        defaultPitch = pitch;
+        defaultDistance = distance;
     }
 
     // Looks for the cursor to be locked and hidden
@@ -157,5 +161,34 @@ public class ThirdPersonCam : MonoBehaviour
     public void SnapYawTo(float worldYaw)
     {
         yaw = worldYaw;
+    }
+
+    public void ResetToDefaultAtYaw(float worldYaw)
+    {
+        yaw = worldYaw;
+        pitch = defaultPitch;
+        distance = defaultDistance;
+
+        if (target == null)
+        {
+            return;
+        }
+
+        Vector3 focusPoint = target.position + focusOffset;
+        Quaternion orbitRotation = Quaternion.Euler(pitch, yaw, 0f);
+        Vector3 desiredPosition = focusPoint - orbitRotation * Vector3.forward * distance;
+
+        if (cameraCollision)
+        {
+            desiredPosition = ResolveCollision(focusPoint, desiredPosition);
+        }
+
+        transform.position = desiredPosition;
+
+        Vector3 lookDirection = focusPoint - transform.position;
+        if (lookDirection.sqrMagnitude > 1e-6f)
+        {
+            transform.rotation = Quaternion.LookRotation(lookDirection.normalized, Vector3.up);
+        }
     }
 }
