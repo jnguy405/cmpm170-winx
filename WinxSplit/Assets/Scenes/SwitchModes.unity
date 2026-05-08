@@ -460,6 +460,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3338392216436705275, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
   m_PrefabInstance: {fileID: 1122594040}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1122594042 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3017098895884131664, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
+  m_PrefabInstance: {fileID: 1122594040}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1130653921
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,6 +616,7 @@ MonoBehaviour:
   camModeSwitch: {fileID: 1889591564}
   rb: {fileID: 773281356}
   physicsCollider: {fileID: 1468265632}
+  myAnimator: {fileID: 1122594042}
   groundAcceleration: 35
   groundDeceleration: 45
   airAcceleration: 12

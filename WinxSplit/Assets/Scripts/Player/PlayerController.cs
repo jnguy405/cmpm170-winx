@@ -10,6 +10,7 @@ public partial class PlayerController : MonoBehaviour
     [SerializeField] private CamModeSwitch camModeSwitch;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Collider physicsCollider;
+    [SerializeField] private Animator myAnimator;
     // [SerializeField] private AudioSource footstepSource;
     // [SerializeField] private AudioClip walkClip;
     // [SerializeField] private AudioClip sprintClip;
@@ -25,7 +26,6 @@ public partial class PlayerController : MonoBehaviour
     [Header("Grounding")]
     private float groundDistance = 0.4f;
     [SerializeField] private LayerMask groundMask;
-    // private Animator myAnimator;
 
     // Movement
     private float walkSpeed = 10f;
@@ -120,7 +120,13 @@ public partial class PlayerController : MonoBehaviour
         rb.isKinematic = false;                                                 // the rigidbody is not kinematic
         rb.constraints &= ~RigidbodyConstraints.FreezeRotationY;                // the rigidbody is not frozen on the y axis
 
-        // myAnimator = GetComponent<Animator>(); // for animations later
+        if (myAnimator == null)
+        {
+            myAnimator = GetComponent<Animator>()
+                ?? GetComponentInChildren<Animator>()
+                ?? GetComponentInParent<Animator>();
+        }
+
         baseScaleY = transform.localScale.y;
 
         isGrounded = groundCheck != null && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask); // checks if the player is grounded
@@ -142,7 +148,7 @@ public partial class PlayerController : MonoBehaviour
         HandleJumpInput();
         HandleMouseLookInput();
         MovementInput();
-        // UpdateAnimation();
+        UpdateAnimation();
     }
 
 
@@ -466,14 +472,17 @@ public partial class PlayerController : MonoBehaviour
     //     }
     // }
     //
-    // private void UpdateAnimation()
-    // {
-    //     if (myAnimator == null)
-    //     {
-    //         return;
-    //     }
-    //
-    //     myAnimator.SetBool("Walking", isWalking);
-    //     myAnimator.SetBool("Running", isSprinting && !isCrouching && isWalking);
-    // }
+    private void UpdateAnimation()
+    {
+        if (myAnimator == null)
+        {
+            return;
+        }
+
+        bool isRunningAnim = isSprinting && !isCrouching && isWalking;
+        bool isWalkingAnim = isWalking && !isRunningAnim;
+
+        myAnimator.SetBool("Running", isRunningAnim);
+        myAnimator.SetBool("Walking", isWalkingAnim);
+    }
 }
