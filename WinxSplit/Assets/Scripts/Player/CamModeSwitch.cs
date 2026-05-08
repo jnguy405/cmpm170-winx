@@ -72,14 +72,8 @@ public class CamModeSwitch : MonoBehaviour
             return;
         }
 
-        bool previousGliding = isGliding;
         isGliding = gliding;
         initialized = true;
-
-        if (previousGliding != gliding)
-        {
-            AlignIncomingCameraPose(gliding);
-        }
 
         if (switchCameraGameObjects)
         {
@@ -106,35 +100,4 @@ public class CamModeSwitch : MonoBehaviour
         }
     }
 
-    private void AlignIncomingCameraPose(bool gliding)
-    {
-        Transform outgoing = gliding ? GetThirdPersonTransform() : GetGlidingTransform();
-        Transform incoming = gliding ? GetGlidingTransform() : GetThirdPersonTransform();
-        if (incoming == null || outgoing == null)
-        {
-            return;
-        }
-
-        incoming.SetPositionAndRotation(outgoing.position, outgoing.rotation);
-    }
-
-    private Transform GetThirdPersonTransform()
-    {
-        if (thirdPersonCameraRoot != null)
-        {
-            return thirdPersonCameraRoot.transform;
-        }
-
-        return thirdPersonCamera != null ? thirdPersonCamera.transform : null;
-    }
-
-    private Transform GetGlidingTransform()
-    {
-        if (glidingCameraRoot != null)
-        {
-            return glidingCameraRoot.transform;
-        }
-
-        return glidingCamera != null ? glidingCamera.transform : null;
-    }
 }
