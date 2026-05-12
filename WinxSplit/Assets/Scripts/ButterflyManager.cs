@@ -1,9 +1,11 @@
 using UnityEngine;
-using System.IO;
 using System.Linq;
 
 public class ButterflyManager : MonoBehaviour {
     public ParticleSystem[] butterflySystems;
+    
+    public TextAsset recipeJsonAsset; 
+    
     private RecipeList recipeList;
 
     void Start() {
@@ -11,15 +13,22 @@ public class ButterflyManager : MonoBehaviour {
     }
 
     void LoadRecipes() {
-        string path = Path.Combine(Application.streamingAssetsPath, "recipes.json");
-        if (File.Exists(path)) {
-            string jsonString = File.ReadAllText(path);
-            recipeList = JsonUtility.FromJson<RecipeList>(jsonString);
+        if (recipeJsonAsset != null) {
+            recipeList = JsonUtility.FromJson<RecipeList>(recipeJsonAsset.text);
+            
+            if (recipeList != null && recipeList.recipes != null) {
+                Debug.Log($"Successfully loaded {recipeList.recipes.Length} recipes from TextAsset.");
+            } else {
+                Debug.LogError("JSON found but failed to parse. Check your JSON structure!");
+            }
+        } else {
+            Debug.LogError("No JSON asset assigned to ButterflyManager in the Inspector!");
         }
     }
 
     public void CheckRecipe(int[] currentItems, Vector3 spawnPoint) {
-        // Sort both arrays so the order they were dropped in doesn't matter
+        if (recipeList == null || recipeList.recipes == null) return;
+
         System.Array.Sort(currentItems);
 
         foreach (var recipe in recipeList.recipes) {
@@ -34,17 +43,10 @@ public class ButterflyManager : MonoBehaviour {
         Debug.Log("No recipe found for this combo!");
     }
 
-    public void SpawnSpecificButterfly(int index)
-    {
-        if (index >= 0 && index < butterflySystems.Length)
-        {
-            // 1. Create a parameter object
+    public void SpawnSpecificButterfly(int index) {
+        if (index >= 0 && index < butterflySystems.Length) {
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
-            
-            // 2. Set the exact position (0, 0, 2)
             emitParams.position = new Vector3(0f, 0f, 0f);
-            
-            // 3. Emit using these parameters
             butterflySystems[index].Emit(emitParams, 1);
         }
     }

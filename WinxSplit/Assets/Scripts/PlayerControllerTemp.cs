@@ -5,42 +5,14 @@ public class PlayerControllerTemp : MonoBehaviour
 {
     public float speed = 5f;
     public float sensitivity = 0.5f;
-    public InventoryManager inventory; // Link this in inspector
     float xRotation = 0f;
-    bool isCursorLocked = true;
-
-    void Start() => UpdateCursorState();
 
     void Update()
     {
-        // Toggle Cursor with Tab for UI interaction
-        if (Keyboard.current.tabKey.wasPressedThisFrame)
+        if (Cursor.lockState == CursorLockMode.Locked) 
         {
-            isCursorLocked = !isCursorLocked;
-            UpdateCursorState();
+            HandleMovement();
         }
-
-        if (isCursorLocked) HandleMovement();
-        
-        // Pickup Logic: Click to collect item
-        if (Mouse.current.leftButton.wasPressedThisFrame && !isCursorLocked)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                if (hit.transform.TryGetComponent(out CollectibleItem item))
-                {
-                    inventory.AddItem(item.itemID);
-                    Destroy(hit.transform.gameObject);
-                }
-            }
-        }
-    }
-
-    void UpdateCursorState()
-    {
-        Cursor.lockState = isCursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
-        Cursor.visible = !isCursorLocked;
     }
 
     void HandleMovement()

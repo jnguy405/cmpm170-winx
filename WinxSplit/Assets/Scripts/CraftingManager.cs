@@ -6,19 +6,19 @@ public class CraftingManager : MonoBehaviour
 {
     public ButterflyManager butterflyManager;
     public InventoryManager inventory;
-    public GameObject craftingUIPanel; // Drag your Canvas Panel here
+    public GameObject craftingUIPanel;
+    
+    public Image[] slotImages; // Drag your 3 UI Box images here
     public Color activeColor = Color.white;
     public Color emptyColor = new Color(1, 1, 1, 0.2f);
     
-    public Image[] slotImages;
     private List<int> currentCombo = new List<int>();
 
-    void Start() => CloseUI(); // Ensure UI is hidden on start
+    void Start() => CloseUI();
 
     public void OpenUI()
     {
         craftingUIPanel.SetActive(true);
-        // Unlock cursor for UI interaction
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -26,32 +26,40 @@ public class CraftingManager : MonoBehaviour
     public void CloseUI()
     {
         craftingUIPanel.SetActive(false);
-        // Re-lock cursor for gameplay
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void SelectItemForCrafting(int itemID)
+    {
+        if (currentCombo.Count >= 3) {
+            Debug.Log("Crafting slots are full!");
+            return;
+        }
+
+        if (inventory.HasItem(itemID))
+        {
+            currentCombo.Add(itemID);
+            inventory.RemoveItem(itemID);
+            UpdateUI();
+        }
+        else {
+            Debug.Log($"You don't have any of Item ID: {itemID} in your inventory!");
+        }
     }
 
     public void Craft()
     {
         if (currentCombo.Count == 3)
         {
+            // Spawns the butterfly at the center of the world
             butterflyManager.CheckRecipe(currentCombo.ToArray(), Vector3.zero);
             currentCombo.Clear();
             UpdateUI();
-            
-            // Hide the UI once crafting is successful
             CloseUI();
         }
-    }
-
-    // Button function: Add item to crafting queue
-    public void SelectItemForCrafting(int itemID)
-    {
-        if (currentCombo.Count < 3 && inventory.HasItem(itemID))
-        {
-            currentCombo.Add(itemID);
-            inventory.RemoveItem(itemID);
-            UpdateUI();
+        else {
+            Debug.Log("You need 3 items to craft!");
         }
     }
 
@@ -62,7 +70,6 @@ public class CraftingManager : MonoBehaviour
             slotImages[i].color = (i < currentCombo.Count) ? activeColor : emptyColor;
         }
     }
-
 
     public void Cancel()
     {
