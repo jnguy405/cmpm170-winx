@@ -23,6 +23,10 @@ public partial class PlayerController : MonoBehaviour
     [SerializeField] private float jumpHeight = 1.2f;
     private float gravity = -9.81f;
 
+    [Header("Dash")]
+    [SerializeField] private float dashLungeImpulse = 14f;
+    [SerializeField] private float dashAnimatorHoldDuration = 0.42f;
+
     [Header("Grounding")]
     private float groundDistance = 0.4f;
     [SerializeField] private LayerMask groundMask;
@@ -43,6 +47,15 @@ public partial class PlayerController : MonoBehaviour
     // Movement State
     private bool isSprinting;
     private bool isWalking;
+    private bool dashPressedThisFrame;
+    private bool dashLungePending;
+    private Vector3 pendingDashLungeDir;
+    private float dashAnimTimer;
+    private bool attack1Queued;
+    private bool attack2Queued;
+    private bool skill1Queued;
+    private bool skill2Queued;
+    private bool skill3Queued;
     private bool isGrounded;
     private bool wasGrounded;
     private bool wasGliding;
@@ -58,7 +71,6 @@ public partial class PlayerController : MonoBehaviour
     // Camera
     private ThirdPersonCam thirdPersonCam;
     private float pendingYawDelta;
-
 
     private void Start()
     {
@@ -170,6 +182,7 @@ public partial class PlayerController : MonoBehaviour
         ApplyPendingYawRotation();
         float verticalVelocity = ResolveVerticalVelocity();
         ApplyHorizontalMotion();
+        ApplyDashLungeIfPending();
         VerticalVelocity(verticalVelocity);
     }
 
@@ -350,6 +363,39 @@ public partial class PlayerController : MonoBehaviour
             QueryTriggerInteraction.Ignore);
     }
 
+    private void ApplyDashLungeIfPending()
+    {
+        if (!dashLungePending || rb == null)
+        {
+            return;
+        }
+
+        dashLungePending = false;
+        Vector3 dir = pendingDashLungeDir;
+        if (dir.sqrMagnitude < 1e-6f)
+        {
+            return;
+        }
+
+        Vector3 v = rb.linearVelocity;
+        Vector3 planar = new Vector3(v.x, 0f, v.z) + dir * dashLungeImpulse;
+        rb.linearVelocity = new Vector3(planar.x, v.y, planar.z);
+    }
+
+    private Vector3 ComputePlanarDashDirection()
+    {
+        Vector3 fromInput = transform.right * moveX + transform.forward * moveZ;
+        fromInput.y = 0f;
+        if (fromInput.sqrMagnitude > 0.0001f)
+        {
+            return fromInput.normalized;
+        }
+
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+        return forward.sqrMagnitude > 0.0001f ? forward.normalized : Vector3.zero;
+    }
+
     // Applies the standard horizontal motion for the player (movement)
     private void ApplyHorizontalMotion()
     {
@@ -479,10 +525,58 @@ public partial class PlayerController : MonoBehaviour
             return;
         }
 
-        bool isRunningAnim = isSprinting && !isCrouching && isWalking;
-        bool isWalkingAnim = isWalking && !isRunningAnim;
+        bool canDash =
+            isGrounded
+            && !isCrouching
+            && (glidingSystem == null || !glidingSystem.IsGliding);
+
+        if (dashPressedThisFrame && dashAnimTimer <= 0f && canDash)
+        {
+            dashAnimTimer = Mathf.Max(0.01f, dashAnimatorHoldDuration);
+            pendingDashLungeDir = ComputePlanarDashDirection();
+            dashLungePending = true;
+        }
+
+        dashAnimTimer = Mathf.Max(0f, dashAnimTimer - Time.deltaTime);
+        bool dashAnimActive = dashAnimTimer > 0f;
+
+        bool isRunningAnim = isSprinting && !isCrouching && isWalking && !dashAnimActive;
+        bool isWalkingAnim = isWalking && !isRunningAnim && !dashAnimActive;
 
         myAnimator.SetBool("Running", isRunningAnim);
         myAnimator.SetBool("Walking", isWalkingAnim);
+
+        myAnimator.SetBool("Dash", dashAnimActive);
+
+        if (attack1Queued)
+        {
+            myAnimator.SetTrigger("Attack1");
+        }
+
+        if (attack2Queued)
+        {
+            myAnimator.SetTrigger("Attack2");
+        }
+
+        if (skill1Queued)
+        {
+            myAnimator.SetTrigger("Skill1");
+        }
+
+        if (skill2Queued)
+        {
+            myAnimator.SetTrigger("Skill2");
+        }
+
+        if (skill3Queued)
+        {
+            myAnimator.SetTrigger("Skill3");
+        }
+
+        attack1Queued = false;
+        attack2Queued = false;
+        skill1Queued = false;
+        skill2Queued = false;
+        skill3Queued = false;
     }
 }
