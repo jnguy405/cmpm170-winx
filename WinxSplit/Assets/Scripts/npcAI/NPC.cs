@@ -4,8 +4,8 @@ using Utilities;
 
 namespace npcAI
 {
-    // Simple animal-style FSM: randomly cycles wander / run / munch using time ranges (no player sensing).
-    // Expects animator triggers named Wander, Run, and Munch if an animator is assigned.
+    // Simple animal-style FSM: randomly cycles wander / run using time ranges (no player sensing).
+    // Expects animator triggers named Wander and Run if an animator is assigned.
     [RequireComponent(typeof(NavMeshAgent))]
     public class NPC : MonoBehaviour
     {
@@ -18,7 +18,6 @@ namespace npcAI
         [Header("How long each mood lasts (seconds, random in range)")]
         [SerializeField] Vector2 wanderDuration = new Vector2(8f, 20f);
         [SerializeField] Vector2 runDuration = new Vector2(3f, 8f);
-        [SerializeField] Vector2 munchDuration = new Vector2(4f, 14f);
 
         [Header("After minimum stay, small chance each frame to switch (keeps motion from feeling metronomic)")]
         [SerializeField] float earlySwitchChancePerSecond = 0.08f;
@@ -28,7 +27,6 @@ namespace npcAI
 
         npcWanderState wanderState;
         npcRunState runState;
-        npcMunchState munchState;
 
         IdleState current;
         float stateEndsAt;
@@ -47,7 +45,6 @@ namespace npcAI
             territoryCenter = transform.position;
             wanderState = new npcWanderState(this, animator, agent, wanderRadius);
             runState = new npcRunState(this, animator, agent, runRoamRadius);
-            munchState = new npcMunchState(this, animator, agent);
         }
 
         void Start()
@@ -89,16 +86,14 @@ namespace npcAI
             IdleState next;
             do
             {
-                int roll = Random.Range(0, 3);
-                next = roll == 0 ? wanderState : roll == 1 ? runState : munchState;
+                int roll = Random.Range(0, 2);
+                next = roll == 0 ? wanderState : runState;
             } while (next == current);
 
             if (next == wanderState)
                 EnterState(wanderState, wanderDuration);
-            else if (next == runState)
-                EnterState(runState, runDuration);
             else
-                EnterState(munchState, munchDuration);
+                EnterState(runState, runDuration);
         }
     }
 }
