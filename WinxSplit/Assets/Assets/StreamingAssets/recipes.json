@@ -1,0 +1,14 @@
+{
+  "recipes": [
+    {
+      "combination": [1, 1, 2],
+      "butterflyID": 0,
+      "name": "Red Monarch"
+    },
+    {
+      "combination": [2, 2, 3],
+      "butterflyID": 1,
+      "name": "Blue Morpho"
+    }
+  ]
+}

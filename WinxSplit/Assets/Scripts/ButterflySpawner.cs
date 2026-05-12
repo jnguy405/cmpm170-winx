@@ -2,11 +2,14 @@ using UnityEngine;
 
 public class ButterflySpawner : MonoBehaviour
 {
-    public ButterflyManager manager;
-    public int myID; // Set this in the inspector to match the index of the system you want to spawn from
+    // Drag your CraftingManager object into this slot in the Inspector
+    public CraftingManager craftingManager;
 
     void OnMouseDown()
     {
-        manager.SpawnSpecificButterfly(myID);
+        if (craftingManager != null)
+        {
+            craftingManager.OpenUI();
+        }
     }
 }
