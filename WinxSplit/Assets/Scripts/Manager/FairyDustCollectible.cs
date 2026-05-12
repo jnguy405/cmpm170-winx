@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class FairyDustCollectible : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public int dustAmount = 5;
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if (other.CompareTag("Player"))
+        {
+            CurrencyManager.Instance.AddDust(dustAmount);
+
+            Destroy(gameObject);
+        }
     }
 }
