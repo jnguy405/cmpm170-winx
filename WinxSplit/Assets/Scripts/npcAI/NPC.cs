@@ -16,6 +16,10 @@ namespace npcAI
         [SerializeField] float runSpeed = 4.5f;
         [SerializeField] float turnSpeed = 360f;
 
+        [Header("Locomotion animation gate")]
+        [SerializeField] bool waitForLocomotionStart = true;
+        [SerializeField, Range(0f, 1f)] float locomotionStartNormalizedTime = 0.9f;
+
         [Header("How long each mood lasts (seconds, random in range)")]
         [SerializeField] Vector2 idleDuration = new Vector2(3f, 10f);
         [SerializeField] Vector2 wanderDuration = new Vector2(8f, 20f);
@@ -38,6 +42,8 @@ namespace npcAI
         public float WalkSpeed => walkSpeed;
         public float RunSpeed => runSpeed;
         public float TurnSpeed => turnSpeed;
+        public bool WaitForLocomotionStart => waitForLocomotionStart;
+        public float LocomotionStartNormalizedTime => locomotionStartNormalizedTime;
         public Vector3 TerritoryCenter => territoryCenter;
 
         void Awake()

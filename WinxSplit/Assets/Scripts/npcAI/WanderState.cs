@@ -9,6 +9,7 @@ namespace npcAI
         readonly float wanderRadius;
 
         bool preparingMove;
+        bool awaitingLocomotionStart;
         Vector3 moveTarget;
 
         public npcWanderState(NPC npc, Animator animator, NavMeshAgent agent, float wanderRadius)
@@ -27,12 +28,13 @@ namespace npcAI
             }
 
             preparingMove = false;
+            awaitingLocomotionStart = false;
             QueueNextDestination();
         }
 
         public override void Update()
         {
-            UpdateTurnThenMove(agent, "Walk", ref preparingMove, ref moveTarget, QueueNextDestination);
+            UpdateTurnThenMove(agent, "Walk", ref preparingMove, ref awaitingLocomotionStart, ref moveTarget, QueueNextDestination);
         }
 
         void QueueNextDestination()

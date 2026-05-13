@@ -81,8 +81,9 @@ namespace npcAI
 
         protected void UpdateTurnThenMove(
             NavMeshAgent agent,
-            string locomotionTrigger,
+            string locomotionStateName,
             ref bool preparingMove,
+            ref bool awaitingLocomotionStart,
             ref Vector3 moveTarget,
             Action queueNextDestination)
         {
@@ -94,16 +95,21 @@ namespace npcAI
                 if (!RotateTowardPoint(agent.transform, moveTarget, npc.TurnSpeed))
                     return;
 
-                agent.isStopped = false;
-                if (!SetDestinationOnNavMesh(agent, moveTarget))
-                {
-                    preparingMove = false;
-                    queueNextDestination();
-                    return;
-                }
-
-                SetStateTrigger(locomotionTrigger);
+                SetStateTrigger(locomotionStateName);
                 preparingMove = false;
+                awaitingLocomotionStart = npc.WaitForLocomotionStart;
+                if (!awaitingLocomotionStart)
+                    BeginLocomotion(agent, moveTarget, ref awaitingLocomotionStart, queueNextDestination);
+                return;
+            }
+
+            if (awaitingLocomotionStart)
+            {
+                agent.isStopped = true;
+                if (!ReadyToStartLocomotion(locomotionStateName))
+                    return;
+
+                BeginLocomotion(agent, moveTarget, ref awaitingLocomotionStart, queueNextDestination);
                 return;
             }
 
@@ -117,7 +123,7 @@ namespace npcAI
             if (HasReachedDestination(agent))
                 queueNextDestination();
 
-            if (!preparingMove && agent.hasPath)
+            if (agent.hasPath)
             {
                 Vector3 facePoint = agent.velocity.sqrMagnitude > 0.01f
                     ? agent.transform.position + agent.velocity
@@ -125,6 +131,52 @@ namespace npcAI
                 RotateTowardPoint(agent.transform, facePoint, npc.TurnSpeed);
             }
         }
+
+        void BeginLocomotion(
+            NavMeshAgent agent,
+            Vector3 moveTarget,
+            ref bool awaitingLocomotionStart,
+            Action queueNextDestination)
+        {
+            agent.isStopped = false;
+            if (!SetDestinationOnNavMesh(agent, moveTarget))
+            {
+                awaitingLocomotionStart = false;
+                queueNextDestination();
+                return;
+            }
+
+            awaitingLocomotionStart = false;
+        }
+
+        protected bool ReadyToStartLocomotion(string locomotionStateName)
+        {
+            if (animator == null || !npc.WaitForLocomotionStart)
+                return true;
+
+            int locomotionHash = Animator.StringToHash(locomotionStateName);
+            AnimatorStateInfo current = animator.GetCurrentAnimatorStateInfo(0);
+            if (current.shortNameHash == locomotionHash)
+                return true;
+
+            if (animator.IsInTransition(0))
+            {
+                AnimatorStateInfo next = animator.GetNextAnimatorStateInfo(0);
+                if (next.shortNameHash == locomotionHash)
+                    return true;
+            }
+
+            if (IsIdleBlendState(current))
+            {
+                float loopTime = current.normalizedTime % 1f;
+                return loopTime >= npc.LocomotionStartNormalizedTime;
+            }
+
+            return true;
+        }
+
+        static bool IsIdleBlendState(AnimatorStateInfo state) =>
+            state.IsName("Blend Tree") || state.IsName("BlendTree");
 
         // Random point around center on the agent's NavMesh; minExtraSeparation pushes goals farther for run bursts.
         protected static bool TryPickRandomNavDestinationPoint(

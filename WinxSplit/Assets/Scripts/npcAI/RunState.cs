@@ -10,6 +10,7 @@ namespace npcAI
         float savedSpeed;
 
         bool preparingMove;
+        bool awaitingLocomotionStart;
         Vector3 moveTarget;
 
         public npcRunState(NPC npc, Animator animator, NavMeshAgent agent, float roamRadius)
@@ -28,12 +29,13 @@ namespace npcAI
             agent.isStopped = true;
 
             preparingMove = false;
+            awaitingLocomotionStart = false;
             QueueNextDestination();
         }
 
         public override void Update()
         {
-            UpdateTurnThenMove(agent, "Run", ref preparingMove, ref moveTarget, QueueNextDestination);
+            UpdateTurnThenMove(agent, "Run", ref preparingMove, ref awaitingLocomotionStart, ref moveTarget, QueueNextDestination);
         }
 
         public override void Exit()
