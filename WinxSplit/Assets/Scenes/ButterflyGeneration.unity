@@ -1575,6 +1575,11 @@ MonoBehaviour:
   - {fileID: 901014547}
   - {fileID: 816586257}
   - {fileID: 1899161689}
+  itemSprites:
+  - {fileID: 21300000, guid: 752c50b3ab8264c44a5f7f5e7e5842e0, type: 3}
+  - {fileID: 21300000, guid: 1b8693abb3f6050458af51e82f9f215d, type: 3}
+  - {fileID: 21300000, guid: f5eedae97cf5e23488210a992b811aaf, type: 3}
+  emptySlotSprite: {fileID: 0}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   emptyColor: {r: 1, g: 1, b: 1, a: 0.2}
 --- !u!114 &691827473

@@ -8,7 +8,11 @@ public class CraftingManager : MonoBehaviour
     public InventoryManager inventory;
     public GameObject craftingUIPanel;
     
+    [Header("UI Slots")]
     public Image[] slotImages; // Drag your 3 UI Box images here
+    public Sprite[] itemSprites; // Drag your item icons here in ID order
+    public Sprite emptySlotSprite; // Optional
+    
     public Color activeColor = Color.white;
     public Color emptyColor = new Color(1, 1, 1, 0.2f);
     
@@ -32,10 +36,7 @@ public class CraftingManager : MonoBehaviour
 
     public void SelectItemForCrafting(int itemID)
     {
-        if (currentCombo.Count >= 3) {
-            Debug.Log("Crafting slots are full!");
-            return;
-        }
+        if (currentCombo.Count >= 3) return;
 
         if (inventory.HasItem(itemID))
         {
@@ -43,8 +44,25 @@ public class CraftingManager : MonoBehaviour
             inventory.RemoveItem(itemID);
             UpdateUI();
         }
-        else {
-            Debug.Log($"You don't have any of Item ID: {itemID} in your inventory!");
+    }
+
+    void UpdateUI()
+    {
+        for (int i = 0; i < slotImages.Length; i++)
+        {
+            if (i < currentCombo.Count)
+            {
+                // Set the sprite to the one matching the item ID
+                int id = currentCombo[i];
+                slotImages[i].sprite = itemSprites[id];
+                slotImages[i].color = activeColor;
+            }
+            else
+            {
+                // Show empty slot sprite and lower the alpha
+                slotImages[i].sprite = emptySlotSprite;
+                slotImages[i].color = emptyColor;
+            }
         }
     }
 
@@ -52,22 +70,10 @@ public class CraftingManager : MonoBehaviour
     {
         if (currentCombo.Count == 3)
         {
-            // Spawns the butterfly at the center of the world
             butterflyManager.CheckRecipe(currentCombo.ToArray(), Vector3.zero);
             currentCombo.Clear();
             UpdateUI();
             CloseUI();
-        }
-        else {
-            Debug.Log("You need 3 items to craft!");
-        }
-    }
-
-    void UpdateUI()
-    {
-        for (int i = 0; i < slotImages.Length; i++)
-        {
-            slotImages[i].color = (i < currentCombo.Count) ? activeColor : emptyColor;
         }
     }
 
