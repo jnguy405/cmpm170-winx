@@ -2,15 +2,16 @@ using UnityEngine;
 
 public class PauseManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
     }
-
-    // Update is called once per frame
+    // listen for the escape key to pause the game and open the pause menu
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            // toggle the pause menu
+        }
     }
 }
