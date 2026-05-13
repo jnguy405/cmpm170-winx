@@ -66,13 +66,30 @@ namespace ithappy.Animals_FREE
 
         private void Update()
         {
+            if (!CanMove())
+            {
+                return;
+            }
+
             m_Movement.Move(Time.deltaTime, in m_Axis, in m_Target, m_IsRun, m_IsMoving, out var animAxis, out var isAir);
             m_Animation.Animate(in animAxis, m_IsRun ? 1f : 0f, Time.deltaTime);
         }
 
         private void OnAnimatorIK()
         {
+            if (!CanMove())
+            {
+                return;
+            }
+
             m_Animation.AnimateIK(in m_Target, m_LookWeight);
+        }
+
+        private bool CanMove()
+        {
+            return m_Controller != null
+                && m_Controller.enabled
+                && m_Controller.gameObject.activeInHierarchy;
         }
 
         public void SetInput(in Vector2 axis, in Vector3 target, in bool isRun, in bool isJump)
@@ -95,6 +112,11 @@ namespace ithappy.Animals_FREE
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
+            if (!CanMove())
+            {
+                return;
+            }
+
             if(hit.normal.y > m_Controller.stepOffset)
             {
                 m_Movement.SetSurface(hit.normal);
@@ -169,6 +191,13 @@ namespace ithappy.Animals_FREE
 
             public void Move(float deltaTime, in Vector2 axis, in Vector3 target, bool isRun, bool isMoving, out Vector2 animAxis, out bool isAir)
             {
+                if (m_Controller == null || !m_Controller.enabled || !m_Controller.gameObject.activeInHierarchy)
+                {
+                    animAxis = Vector2.zero;
+                    isAir = false;
+                    return;
+                }
+
                 var cameraLook = Vector3.Normalize(target - m_Transform.position);
                 var targetForward = m_LastForward;
 
@@ -207,6 +236,11 @@ namespace ithappy.Animals_FREE
 
             private void Displace(float deltaTime, in Vector3 movement, bool isRun)
             {
+                if (m_Controller == null || !m_Controller.enabled)
+                {
+                    return;
+                }
+
                 Vector3 displacement = (isRun ? m_RunSpeed : m_WalkSpeed) * movement;
                 displacement += m_GravityAcelleration;
                 displacement *= deltaTime;
@@ -216,6 +250,12 @@ namespace ithappy.Animals_FREE
 
             private void CaculateGravity(float deltaTime, out bool isAir)
             {
+                if (m_Controller == null || !m_Controller.enabled)
+                {
+                    isAir = false;
+                    return;
+                }
+
                 m_jumpTimer = Mathf.Max(m_jumpTimer - deltaTime, 0f);
 
                 if (m_Controller.isGrounded)
