@@ -102,7 +102,7 @@ public class GlidingSystem : MonoBehaviour
     // Update the glider and set the yaw and pitch (orientation) corresponding to the mouse input
     private void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         if (Mouse.current == null || rb == null)
