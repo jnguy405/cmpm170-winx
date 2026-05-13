@@ -43,6 +43,9 @@ namespace npcAI
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
+            if (agent == null)
+                agent = GetComponentInChildren<NavMeshAgent>(true);
+
             if (animator == null)
                 animator = GetComponentInChildren<Animator>();
 

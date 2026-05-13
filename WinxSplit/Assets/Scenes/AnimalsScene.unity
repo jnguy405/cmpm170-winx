@@ -203,11 +203,11 @@ MonoBehaviour:
   config:
     myObject: {fileID: 0}
     optionalSpawnPrefabs: []
-    totalObjects: 20
+    totalObjects: 5
     clusterCount: 4
     placementCenter: {x: 0, y: 0, z: 0}
-    placementAreaSize: {x: 50, y: 10, z: 50}
-    minClusterDistance: 10
+    placementAreaSize: {x: 20, y: 10, z: 20}
+    minClusterDistance: 1.9
     clusterRadiusVariability: 0.3
     clusterBaseRadius: 5
     minHeightAboveGround: 1

@@ -48,11 +48,22 @@ namespace npcAI
             return false;
         }
 
-        protected static bool HasReachedDestination(NavMeshAgent agent) =>
-            agent != null
-            && !agent.pathPending
-            && agent.remainingDistance <= agent.stoppingDistance
-            && (!agent.hasPath || agent.velocity.sqrMagnitude < 0.0001f);
+        protected static bool HasReachedDestination(NavMeshAgent agent)
+        {
+            if (agent == null || !agent.isActiveAndEnabled || agent.isStopped)
+                return false;
+
+            if (!agent.hasPath || agent.pathPending)
+                return false;
+
+            if (agent.pathStatus != NavMeshPathStatus.PathComplete)
+                return false;
+
+            if (agent.remainingDistance > agent.stoppingDistance)
+                return false;
+
+            return agent.velocity.sqrMagnitude < 0.01f;
+        }
 
         protected bool RotateTowardPoint(Transform transform, Vector3 worldPoint, float degreesPerSecond)
         {
@@ -80,18 +91,39 @@ namespace npcAI
             if (preparingMove)
             {
                 agent.isStopped = true;
-                if (!RotateTowardPoint(npc.transform, moveTarget, npc.TurnSpeed))
+                if (!RotateTowardPoint(agent.transform, moveTarget, npc.TurnSpeed))
                     return;
 
                 agent.isStopped = false;
-                SetDestinationOnNavMesh(agent, moveTarget);
+                if (!SetDestinationOnNavMesh(agent, moveTarget))
+                {
+                    preparingMove = false;
+                    queueNextDestination();
+                    return;
+                }
+
                 SetStateTrigger(locomotionTrigger);
                 preparingMove = false;
                 return;
             }
 
+            if (!agent.hasPath)
+            {
+                if (!agent.pathPending)
+                    queueNextDestination();
+                return;
+            }
+
             if (HasReachedDestination(agent))
                 queueNextDestination();
+
+            if (!preparingMove && agent.hasPath)
+            {
+                Vector3 facePoint = agent.velocity.sqrMagnitude > 0.01f
+                    ? agent.transform.position + agent.velocity
+                    : agent.steeringTarget;
+                RotateTowardPoint(agent.transform, facePoint, npc.TurnSpeed);
+            }
         }
 
         // Random point around center on the agent's NavMesh; minExtraSeparation pushes goals farther for run bursts.
