@@ -8,6 +8,9 @@ namespace npcAI
         readonly NavMeshAgent agent;
         readonly float wanderRadius;
 
+        bool preparingMove;
+        Vector3 moveTarget;
+
         public npcWanderState(NPC npc, Animator animator, NavMeshAgent agent, float wanderRadius)
             : base(npc, animator)
         {
@@ -19,29 +22,23 @@ namespace npcAI
         {
             if (agent != null)
             {
-                agent.isStopped = false;
+                agent.isStopped = true;
                 agent.speed = npc.WalkSpeed;
             }
 
-            SetStateTrigger("Wander");
-            SetRandomDestination();
+            preparingMove = false;
+            QueueNextDestination();
         }
 
         public override void Update()
         {
-            if (HasReachedDestination())
-                SetRandomDestination();
+            UpdateTurnThenMove(agent, "Walk", ref preparingMove, ref moveTarget, QueueNextDestination);
         }
 
-        void SetRandomDestination()
+        void QueueNextDestination()
         {
-            TryPickRandomNavDestination(agent, npc.TerritoryCenter, wanderRadius, minExtraSeparation: 0f);
+            if (TryPickRandomNavDestinationPoint(agent, npc.TerritoryCenter, wanderRadius, 0f, out moveTarget))
+                preparingMove = true;
         }
-
-        bool HasReachedDestination() =>
-            agent != null
-            && !agent.pathPending
-            && agent.remainingDistance <= agent.stoppingDistance
-            && (!agent.hasPath || agent.velocity.sqrMagnitude < 0.0001f);
     }
 }

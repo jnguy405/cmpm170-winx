@@ -4,8 +4,8 @@ using Utilities;
 
 namespace npcAI
 {
-    // Simple animal-style FSM: randomly cycles wander / run using time ranges (no player sensing).
-    // Expects animator triggers named Wander and Run if an animator is assigned.
+    // Simple animal-style FSM: randomly cycles idle / walk / run using time ranges (no player sensing).
+    // Expects animator triggers named Idle, Walk, and Run if an animator is assigned.
     [RequireComponent(typeof(NavMeshAgent))]
     public class NPC : MonoBehaviour
     {
@@ -14,8 +14,10 @@ namespace npcAI
         [SerializeField] float runRoamRadius = 14f;
         [SerializeField] float walkSpeed = 1.75f;
         [SerializeField] float runSpeed = 4.5f;
+        [SerializeField] float turnSpeed = 360f;
 
         [Header("How long each mood lasts (seconds, random in range)")]
+        [SerializeField] Vector2 idleDuration = new Vector2(3f, 10f);
         [SerializeField] Vector2 wanderDuration = new Vector2(8f, 20f);
         [SerializeField] Vector2 runDuration = new Vector2(3f, 8f);
 
@@ -25,6 +27,7 @@ namespace npcAI
         NavMeshAgent agent;
         Vector3 territoryCenter;
 
+        npcIdleState idleState;
         npcWanderState wanderState;
         npcRunState runState;
 
@@ -34,6 +37,7 @@ namespace npcAI
 
         public float WalkSpeed => walkSpeed;
         public float RunSpeed => runSpeed;
+        public float TurnSpeed => turnSpeed;
         public Vector3 TerritoryCenter => territoryCenter;
 
         void Awake()
@@ -43,6 +47,7 @@ namespace npcAI
                 animator = GetComponentInChildren<Animator>();
 
             territoryCenter = transform.position;
+            idleState = new npcIdleState(this, animator, agent);
             wanderState = new npcWanderState(this, animator, agent, wanderRadius);
             runState = new npcRunState(this, animator, agent, runRoamRadius);
         }
@@ -50,7 +55,7 @@ namespace npcAI
         void Start()
         {
             territoryCenter = transform.position;
-            EnterState(wanderState, wanderDuration);
+            EnterState(idleState, idleDuration);
         }
 
         void Update()
@@ -86,11 +91,18 @@ namespace npcAI
             IdleState next;
             do
             {
-                int roll = Random.Range(0, 2);
-                next = roll == 0 ? wanderState : runState;
+                int roll = Random.Range(0, 3);
+                next = roll switch
+                {
+                    0 => idleState,
+                    1 => wanderState,
+                    _ => runState
+                };
             } while (next == current);
 
-            if (next == wanderState)
+            if (next == idleState)
+                EnterState(idleState, idleDuration);
+            else if (next == wanderState)
                 EnterState(wanderState, wanderDuration);
             else
                 EnterState(runState, runDuration);

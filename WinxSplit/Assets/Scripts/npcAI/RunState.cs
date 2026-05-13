@@ -8,7 +8,9 @@ namespace npcAI
         readonly NavMeshAgent agent;
         readonly float roamRadius;
         float savedSpeed;
-        float savedAngularSpeed;
+
+        bool preparingMove;
+        Vector3 moveTarget;
 
         public npcRunState(NPC npc, Animator animator, NavMeshAgent agent, float roamRadius)
             : base(npc, animator)
@@ -22,37 +24,28 @@ namespace npcAI
             if (agent == null) return;
 
             savedSpeed = agent.speed;
-            savedAngularSpeed = agent.angularSpeed;
             agent.speed = npc.RunSpeed;
-            agent.angularSpeed = Mathf.Max(agent.angularSpeed, 420f);
-            agent.isStopped = false;
+            agent.isStopped = true;
 
-            SetStateTrigger("Run");
-            TryPickNextRunPoint();
+            preparingMove = false;
+            QueueNextDestination();
         }
 
         public override void Update()
         {
-            if (HasReachedDestination())
-                TryPickNextRunPoint();
+            UpdateTurnThenMove(agent, "Run", ref preparingMove, ref moveTarget, QueueNextDestination);
         }
 
         public override void Exit()
         {
             if (agent == null) return;
             agent.speed = savedSpeed;
-            agent.angularSpeed = savedAngularSpeed;
         }
 
-        void TryPickNextRunPoint()
+        void QueueNextDestination()
         {
-            TryPickRandomNavDestination(agent, npc.TerritoryCenter, roamRadius, minExtraSeparation: 1.85f);
+            if (TryPickRandomNavDestinationPoint(agent, npc.TerritoryCenter, roamRadius, 1.85f, out moveTarget))
+                preparingMove = true;
         }
-
-        bool HasReachedDestination() =>
-            agent != null
-            && !agent.pathPending
-            && agent.remainingDistance <= agent.stoppingDistance
-            && (!agent.hasPath || agent.velocity.sqrMagnitude < 0.0001f);
     }
 }

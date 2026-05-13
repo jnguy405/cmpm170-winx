@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 using Utilities;
@@ -6,6 +7,8 @@ namespace npcAI
 {
     public class npcBaseState : IdleState
     {
+        protected const float FaceThresholdDegrees = 5f;
+
         protected readonly NPC npc;
         protected readonly Animator animator;
 
@@ -45,15 +48,63 @@ namespace npcAI
             return false;
         }
 
+        protected static bool HasReachedDestination(NavMeshAgent agent) =>
+            agent != null
+            && !agent.pathPending
+            && agent.remainingDistance <= agent.stoppingDistance
+            && (!agent.hasPath || agent.velocity.sqrMagnitude < 0.0001f);
+
+        protected bool RotateTowardPoint(Transform transform, Vector3 worldPoint, float degreesPerSecond)
+        {
+            var flat = worldPoint - transform.position;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < 0.0001f) return true;
+
+            var targetRotation = Quaternion.LookRotation(flat.normalized, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                degreesPerSecond * Time.deltaTime);
+            return Quaternion.Angle(transform.rotation, targetRotation) <= FaceThresholdDegrees;
+        }
+
+        protected void UpdateTurnThenMove(
+            NavMeshAgent agent,
+            string locomotionTrigger,
+            ref bool preparingMove,
+            ref Vector3 moveTarget,
+            Action queueNextDestination)
+        {
+            if (agent == null) return;
+
+            if (preparingMove)
+            {
+                agent.isStopped = true;
+                if (!RotateTowardPoint(npc.transform, moveTarget, npc.TurnSpeed))
+                    return;
+
+                agent.isStopped = false;
+                SetDestinationOnNavMesh(agent, moveTarget);
+                SetStateTrigger(locomotionTrigger);
+                preparingMove = false;
+                return;
+            }
+
+            if (HasReachedDestination(agent))
+                queueNextDestination();
+        }
+
         // Random point around center on the agent's NavMesh; minExtraSeparation pushes goals farther for run bursts.
-        protected static bool TryPickRandomNavDestination(
+        protected static bool TryPickRandomNavDestinationPoint(
             NavMeshAgent agent,
             Vector3 center,
             float radius,
             float minExtraSeparation,
+            out Vector3 destination,
             int maxDiskAttempts = 20,
             int ringFallbackCount = 8)
         {
+            destination = default;
             if (agent == null || !agent.isActiveAndEnabled) return false;
 
             float needDist = Mathf.Max(0.12f, agent.stoppingDistance + 0.2f);
@@ -66,23 +117,23 @@ namespace npcAI
 
             for (int i = 0; i < maxDiskAttempts; i++)
             {
-                var inCircle = Random.insideUnitCircle * radius;
+                var inCircle = UnityEngine.Random.insideUnitCircle * radius;
                 var tryPoint = center + new Vector3(inCircle.x, 0f, inCircle.y);
                 if (!NavMesh.SamplePosition(tryPoint, out var hit, radius, agent.areaMask)) continue;
                 if ((pos - hit.position).sqrMagnitude < minSqr) continue;
-                agent.SetDestination(hit.position);
+                destination = hit.position;
                 return true;
             }
 
             for (int j = 0; j < ringFallbackCount; j++)
             {
-                var dir = Random.insideUnitCircle.normalized;
+                var dir = UnityEngine.Random.insideUnitCircle.normalized;
                 if (dir.sqrMagnitude < 0.0001f) continue;
                 var tryPoint = center + new Vector3(dir.x, 0f, dir.y) * (radius * 0.9f);
                 if (NavMesh.SamplePosition(tryPoint, out var hit, radius, agent.areaMask)
                     && (pos - hit.position).sqrMagnitude > minSqr * 0.5f)
                 {
-                    agent.SetDestination(hit.position);
+                    destination = hit.position;
                     return true;
                 }
             }
