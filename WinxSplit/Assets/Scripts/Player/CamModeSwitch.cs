@@ -125,7 +125,6 @@ public class CamModeSwitch : MonoBehaviour
         if (thirdPersonCamera != null)
         {
             thirdPersonCamera.enabled = !gliding;
-            thirdPersonCamera.SetMouseLookEnabled(!gliding);
         }
 
         if (glidingCamera != null)
