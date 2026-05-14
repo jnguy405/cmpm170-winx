@@ -32,9 +32,9 @@ public partial class PlayerController
         Mouse mouse = Mouse.current;
         attack1Queued = mouse != null && mouse.leftButton.wasPressedThisFrame;
         attack2Queued = mouse != null && mouse.rightButton.wasPressedThisFrame;
-        skill1Queued = keyboard != null && keyboard.qKey.wasPressedThisFrame;
-        skill2Queued = keyboard != null && keyboard.eKey.wasPressedThisFrame;
-        skill3Queued = keyboard != null && keyboard.rKey.wasPressedThisFrame;
+        skill1Queued = keyboard != null && keyboard.digit1Key.wasPressedThisFrame;
+        skill2Queued = keyboard != null && keyboard.digit2Key.wasPressedThisFrame;
+        skill3Queued = keyboard != null && keyboard.digit3Key.wasPressedThisFrame;
     }
 
     // Handles jump input with Space when not gliding
