@@ -2437,6 +2437,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &632190772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 632190774}
+  - component: {fileID: 632190773}
+  m_Layer: 0
+  m_Name: ModelRegistry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &632190773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632190772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ac6af79b6257e40a178a7124931f1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::npcAI.NPCModelRegistry
+  npcModelPrefabs:
+  - {fileID: 8073443194988779917, guid: 6b0b0b098177a3b439c80991ec9deacc, type: 3}
+  - {fileID: 7402009758359158996, guid: 4ecab060b0afb5d4db61f7f1311b9e24, type: 3}
+  - {fileID: 2629182449500102118, guid: 15ca4494f24bf9741a48b37ec2c4c632, type: 3}
+  - {fileID: 3851015956068934394, guid: dfb23d60f30c46847ba7815aa09e2567, type: 3}
+  - {fileID: 6397291155531275063, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
+  - {fileID: 5883155896844355918, guid: 8741cd6c8b9fc3947999191d0c381f50, type: 3}
+--- !u!4 &632190774
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632190772}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 125.47218, y: 0, z: -70.26648}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &669567803
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4121,6 +4172,175 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fb5a139590217c04b99ba7a62ab70e79, type: 3}
+--- !u!1 &1210147756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1210147758}
+  - component: {fileID: 1210147757}
+  m_Layer: 0
+  m_Name: npcSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1210147757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1210147756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e3b229b0dd5174fbb40aa609792e63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Spawner
+  npcModelRegistry: {fileID: 632190773}
+  config:
+    myObject: {fileID: 0}
+    optionalSpawnPrefabs: []
+    totalObjects: 40
+    clusterCount: 20
+    placementCenter: {x: 50, y: 1, z: 50}
+    placementAreaSize: {x: 80, y: 10, z: 80}
+    minClusterDistance: 1.9
+    clusterRadiusVariability: 0.3
+    clusterBaseRadius: 5
+    minHeightAboveGround: 1
+    maxHeightAboveGround: 5
+    groundLayer:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    fallbackSpawnHeight: 10
+    exclusionZones: []
+    useLayerExclusion: 1
+    layerExclusions:
+    - layerName: Default
+      excludeFromSpawn: 0
+      layerIndex: 0
+    - layerName: TransparentFX
+      excludeFromSpawn: 0
+      layerIndex: 1
+    - layerName: Ignore Raycast
+      excludeFromSpawn: 0
+      layerIndex: 2
+    - layerName: Ground
+      excludeFromSpawn: 0
+      layerIndex: 3
+    - layerName: Water
+      excludeFromSpawn: 0
+      layerIndex: 4
+    - layerName: UI
+      excludeFromSpawn: 0
+      layerIndex: 5
+    - layerName: Layer 6 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 6
+    - layerName: Layer 7 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 7
+    - layerName: Layer 8 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 8
+    - layerName: Layer 9 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 9
+    - layerName: Layer 10 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 10
+    - layerName: Layer 11 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 11
+    - layerName: Layer 12 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 12
+    - layerName: Layer 13 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 13
+    - layerName: Layer 14 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 14
+    - layerName: Layer 15 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 15
+    - layerName: Layer 16 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 16
+    - layerName: Layer 17 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 17
+    - layerName: Layer 18 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 18
+    - layerName: Layer 19 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 19
+    - layerName: Layer 20 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 20
+    - layerName: Layer 21 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 21
+    - layerName: Layer 22 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 22
+    - layerName: Layer 23 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 23
+    - layerName: Layer 24 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 24
+    - layerName: Layer 25 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 25
+    - layerName: Layer 26 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 26
+    - layerName: Layer 27 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 27
+    - layerName: Layer 28 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 28
+    - layerName: Layer 29 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 29
+    - layerName: Layer 30 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 30
+    - layerName: Layer 31 (Unused)
+      excludeFromSpawn: 0
+      layerIndex: 31
+    randomSeed: 0
+    useRandomSeed: 0
+    showDebugGizmos: 1
+    showGroundRays: 1
+    placementAreaColor: {r: 0, g: 1, b: 0, a: 0.2}
+    clusterCenterColor: {r: 1, g: 0, b: 0, a: 1}
+    exclusionZoneColor: {r: 1, g: 0, b: 0, a: 0.3}
+    groundRayColor: {r: 0, g: 0, b: 1, a: 1}
+    destroyPreviousSpawns: 1
+--- !u!4 &1210147758
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1210147756}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 125.47218, y: 0, z: -70.26648}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1210751531
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7065,6 +7285,8 @@ SceneRoots:
   - {fileID: 1916737572}
   - {fileID: 584413040}
   - {fileID: 1426621369}
+  - {fileID: 1210147758}
+  - {fileID: 632190774}
   - {fileID: 1669473042}
   - {fileID: 337180573}
   - {fileID: 1048719508}
