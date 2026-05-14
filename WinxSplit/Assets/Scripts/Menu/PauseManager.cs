@@ -3,7 +3,6 @@ using UnityEngine.InputSystem;
 
 public class PauseManager : MonoBehaviour
 {
-    [Header("References")]
     [SerializeField] private GameObject pauseMenuCanvas;
     
     private bool isPaused = false;
@@ -21,13 +20,12 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
-        // Check for Escape key using the new Input System
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (isPaused)
-                ResumeGame();
-            else
+            if (!isPaused)
+            {
                 PauseGame();
+            }
         }
     }
 
@@ -38,16 +36,19 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        Debug.Log("Game Paused");
     }
 
-    private void ResumeGame()
+    public void ResumeGame()
     {
         isPaused = false;
         pauseMenuCanvas.SetActive(false);
         Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        Debug.Log("Game Resumed");
+    }
+
+    public void OnVolumeButtonPressed()
+    {
+        // Volume control will be implemented later
     }
 }
