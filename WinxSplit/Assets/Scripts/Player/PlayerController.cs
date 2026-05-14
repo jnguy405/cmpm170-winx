@@ -97,7 +97,17 @@ public partial class PlayerController : MonoBehaviour
         if (myCamera != null)
         {
             thirdPersonCam = myCamera.GetComponent<ThirdPersonCam>()
+                ?? myCamera.GetComponentInChildren<ThirdPersonCam>(true)
                 ?? myCamera.GetComponentInParent<ThirdPersonCam>();
+            if (thirdPersonCam != null)
+            {
+                thirdPersonCam.SetMouseLookEnabled(false);
+            }
+        }
+
+        if (thirdPersonCam == null && camModeSwitch != null)
+        {
+            thirdPersonCam = camModeSwitch.GetComponentInChildren<ThirdPersonCam>(true);
             if (thirdPersonCam != null)
             {
                 thirdPersonCam.SetMouseLookEnabled(false);
@@ -155,11 +165,11 @@ public partial class PlayerController : MonoBehaviour
             return;
         }
 
-        UpdateGroundedState();
         HandleStateInput();
         HandleJumpInput();
         HandleMouseLookInput();
         MovementInput();
+        UpdateGroundedState();
         UpdateAnimation();
     }
 
@@ -231,6 +241,16 @@ public partial class PlayerController : MonoBehaviour
         }
 
         bool glideExited = wasGliding && !currentlyGliding;
+        if (glideExited && camModeSwitch != null)
+        {
+            camModeSwitch.SetGliding(false);
+        }
+        else if (camModeSwitch != null && glidingSystem != null
+            && !glidingSystem.IsGliding && camModeSwitch.IsGlideCameraActive)
+        {
+            camModeSwitch.SetGliding(false);
+        }
+
         bool justLanded = isGrounded && !wasGrounded;
         bool shouldSnapAfterGroundedGlideExit = isGrounded && !currentlyGliding && !hasSnappedAfterGlide;
         if (glideExited || (justLanded && wasGliding) || shouldSnapAfterGroundedGlideExit)
@@ -280,19 +300,53 @@ public partial class PlayerController : MonoBehaviour
         }
 
         // Reset to player-forward as source of truth so third-person offset is truly behind the character.
-        float targetYaw = rb.rotation.eulerAngles.y;
+        Transform facingRoot = rb != null ? rb.transform : transform;
+        float targetYaw = GetPlanarYaw(facingRoot);
         rb.rotation = Quaternion.Euler(0f, targetYaw, 0f);
         rb.angularVelocity = Vector3.zero;
 
         ResetUprightAndFacing();
-        if (thirdPersonCam != null)
-        {
-            thirdPersonCam.ResetToDefaultAtYaw(targetYaw);
-        }
+        SyncGroundedThirdPersonCamera(targetYaw);
 
         isGrounded = true;
         wasGrounded = true;
         jumpQueued = false;
+    }
+
+    // Cursor debug help: snapping the camera with prefab model position
+    private void SyncGroundedThirdPersonCamera(float worldYaw)
+    {
+        if (thirdPersonCam == null && myCamera != null)
+        {
+            thirdPersonCam = myCamera.GetComponent<ThirdPersonCam>()
+                ?? myCamera.GetComponentInChildren<ThirdPersonCam>(true)
+                ?? myCamera.GetComponentInParent<ThirdPersonCam>();
+        }
+
+        if (thirdPersonCam == null && camModeSwitch != null)
+        {
+            thirdPersonCam = camModeSwitch.GetComponentInChildren<ThirdPersonCam>(true);
+        }
+
+        if (thirdPersonCam == null)
+        {
+            return;
+        }
+
+        thirdPersonCam.SetMouseLookEnabled(false);
+        thirdPersonCam.ResetToDefaultAtYaw(worldYaw);
+    }
+
+    private static float GetPlanarYaw(Transform reference)
+    {
+        Vector3 flatForward = reference.forward;
+        flatForward.y = 0f;
+        if (flatForward.sqrMagnitude < 1e-6f)
+        {
+            return reference.eulerAngles.y;
+        }
+
+        return Quaternion.LookRotation(flatForward.normalized, Vector3.up).eulerAngles.y;
     }
 
     private bool TryGetGroundSnapPosition(out Vector3 snappedPosition)
@@ -461,7 +515,9 @@ public partial class PlayerController : MonoBehaviour
     // Switches to Gliding System and Gliding Camera mode
     private void ToggleGlideMode()
     {
-        bool currentlyGliding = glidingSystem != null && glidingSystem.IsGliding;
+        bool currentlyGliding = camModeSwitch != null
+            ? camModeSwitch.IsGlideCameraActive
+            : glidingSystem != null && glidingSystem.IsGliding;
         bool nextGlideState = !currentlyGliding;
 
         if (camModeSwitch != null)

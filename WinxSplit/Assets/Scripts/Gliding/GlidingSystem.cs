@@ -30,19 +30,36 @@ public class GlidingSystem : MonoBehaviour
     [SerializeField] private float divePitchInputScale = 1.2f;          // Scale of the dive pitch input (how much the dive pitch input is applied)
 
     [Header("Paper glide — forces (Acceleration)")]
-    [SerializeField] private float forwardAcceleration = 500f;          // Acceleration of the forward force (how fast the forward force is applied)
+    [SerializeField] private float forwardAcceleration = 40f;          // Acceleration of the forward force (how fast the forward force is applied)
 
     [SerializeField] private float quadraticDrag = 0.2f;                // Drag of the quadratic drag (how much the quadratic drag is applied)
-    [SerializeField] private float liftPerSpeed = 3.5f;                 // Lift per speed (how much the lift is applied per speed)
-    [SerializeField] private float stallSpeed = 3.5f;                   // Stall speed (the speed at which the stall is applied)
-    [SerializeField] private float diveBoost = 12f;                     // Boost of the dive (how much the dive is applied)
-    [SerializeField] private float diveDropAcceleration = 100f;         // Acceleration of the dive drop (how fast the dive drop is applied)
-    [SerializeField] private float loftLiftWhenNoseUp = 90f;            // Lift when the nose is up (how much the lift is applied when the nose is up)
+    [SerializeField] private float liftPerSpeed = 1.2f;                 // Lift per speed (how much the lift is applied per speed)
+    [SerializeField] private float stallSpeed = 6f;                   // Stall speed (the speed at which the stall is applied)
+    [SerializeField] private float diveBoost = 3f;                     // Boost of the dive (how much the dive is applied)
+    [SerializeField] private float diveDropAcceleration = 12f;         // Acceleration of the dive drop (how fast the dive drop is applied)
+    [SerializeField] private float loftLiftWhenNoseUp = 6f;            // Lift when the nose is up (how much the lift is applied when the nose is up)
+
+    [Header("Glide launch")]
+    [SerializeField] private float launchMinWorldY = 10f;
+    [SerializeField] private float launchHeightAboveGround = 10f;
+    [SerializeField] private float launchRiseSpeed = 1.5f;
+    [SerializeField] private float launchHoverDamp = 2f;
+    [SerializeField] private float launchArrivalThreshold = 0.35f;
+    [SerializeField] private float launchGroundRaycastHeight = 2f;
+    [SerializeField] private float launchGroundRaycastDistance = 1000f;
+
+    [Header("Glide cruise")]
+    [SerializeField] private float cruiseEntrySpeed = 7f;
+    [SerializeField] private float cruiseMinAirFactor = 0.45f;
+    [SerializeField] private float cruiseGravityCancel = 8.5f;
 
     private Rigidbody rb;                                      // Rigidbody of the glider
     private float yaw;                                         // Yaw of the glider (rotation around the y-axis)
     private float pitch;                                       // Pitch of the glider (rotation around the x-axis)
     private float roll;                                        // Roll of the glider (rotation around the z-axis)
+    private bool isLaunching;
+    private bool cruiseUnlocked;
+    private float launchTargetY;
 
     private float horizontalInputSmoothed;                     // Smoothed horizontal input (how smooth the horizontal input is)
     private float horizontalInputVel;                          // Velocity of the horizontal input (how fast the horizontal input is applied)
@@ -153,20 +170,162 @@ public class GlidingSystem : MonoBehaviour
     // Fixed update the glider and apply the paper glide forces
     private void FixedUpdate()
     {
-        if (rb == null)
+        if (rb == null || !isGliding)
             return;
 
-        if (!isGliding)
-            return;
+        ApplyGlideRotation();
 
-        // Uses Euler angles to rotate the glider to the target orientation
+        if (isLaunching)
+        {
+            ApplyLaunchLift();
+            return;
+        }
+
+        if (!cruiseUnlocked)
+        {
+            ApplyApexHover();
+            if (HasForwardGlideInput())
+            {
+                cruiseUnlocked = true;
+                BeginGlideCruise();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        ApplyPaperGlideForces();
+    }
+
+    private void ApplyGlideRotation()
+    {
         Quaternion targetOrient = Quaternion.Euler(0f, yaw, 0f) * Quaternion.Euler(pitch, 0f, roll);
         float maxStep = steerMaxDegreesPerSecond <= 1e-5f
             ? Mathf.Infinity
             : steerMaxDegreesPerSecond * Time.fixedDeltaTime;
         rb.MoveRotation(Quaternion.RotateTowards(rb.rotation, targetOrient, maxStep));
+    }
 
-        ApplyPaperGlideForces();
+    private void ApplyLaunchLift()
+    {
+        Vector3 position = rb.position;
+        if (position.y >= launchTargetY - launchArrivalThreshold)
+        {
+            position.y = launchTargetY;
+            rb.MovePosition(position);
+
+            Vector3 velocity = rb.linearVelocity;
+            velocity.y = 0f;
+            rb.linearVelocity = velocity;
+            isLaunching = false;
+            return;
+        }
+
+        float riseStep = launchRiseSpeed * Time.fixedDeltaTime;
+        position.y = Mathf.MoveTowards(position.y, launchTargetY, riseStep);
+        rb.MovePosition(position);
+
+        Vector3 planarVelocity = rb.linearVelocity;
+        planarVelocity.x = 0f;
+        planarVelocity.z = 0f;
+        planarVelocity.y = launchRiseSpeed;
+        rb.linearVelocity = planarVelocity;
+    }
+
+    private void ApplyApexHover()
+    {
+        rb.AddForce(Physics.gravity * -rb.mass, ForceMode.Force);
+
+        Vector3 velocity = rb.linearVelocity;
+        float hoverDamp = launchHoverDamp * Time.fixedDeltaTime;
+        velocity.x = Mathf.MoveTowards(velocity.x, 0f, hoverDamp);
+        velocity.z = Mathf.MoveTowards(velocity.z, 0f, hoverDamp);
+        velocity.y = Mathf.MoveTowards(velocity.y, 0f, hoverDamp);
+        rb.linearVelocity = velocity;
+    }
+
+    private float ComputeLaunchTargetY()
+    {
+        float groundY = GetGroundHeightBelow(rb.position);
+        float aboveGround = groundY + launchHeightAboveGround;
+        return Mathf.Max(launchMinWorldY, aboveGround);
+    }
+
+    private float GetGroundHeightBelow(Vector3 worldPosition)
+    {
+        Vector3 origin = worldPosition + Vector3.up * launchGroundRaycastHeight;
+        if (Physics.Raycast(
+                origin,
+                Vector3.down,
+                out RaycastHit hit,
+                launchGroundRaycastDistance,
+                groundMask,
+                QueryTriggerInteraction.Ignore))
+        {
+            return hit.point.y;
+        }
+
+        return worldPosition.y;
+    }
+
+    private static bool HasForwardGlideInput()
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null)
+        {
+            return false;
+        }
+
+        return keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed;
+    }
+
+    private void BeginGlideLaunch()
+    {
+        launchTargetY = ComputeLaunchTargetY();
+        isLaunching = rb.position.y < launchTargetY - launchArrivalThreshold;
+        cruiseUnlocked = !isLaunching && HasForwardGlideInput();
+
+        Vector3 velocity = rb.linearVelocity;
+        velocity.x = 0f;
+        velocity.z = 0f;
+        if (velocity.y < 0f)
+        {
+            velocity.y = 0f;
+        }
+
+        rb.linearVelocity = velocity;
+
+        if (cruiseUnlocked)
+        {
+            BeginGlideCruise();
+        }
+    }
+
+    private void BeginGlideCruise()
+    {
+        Vector3 forwardPlanar = transform.forward;
+        forwardPlanar.y = 0f;
+        if (forwardPlanar.sqrMagnitude < 1e-6f)
+        {
+            forwardPlanar = Vector3.forward;
+        }
+        else
+        {
+            forwardPlanar.Normalize();
+        }
+
+        Vector3 velocity = rb.linearVelocity;
+        velocity.x = forwardPlanar.x * cruiseEntrySpeed;
+        velocity.z = forwardPlanar.z * cruiseEntrySpeed;
+        velocity.y = 0f;
+        rb.linearVelocity = velocity;
+    }
+
+    private void EndGlide()
+    {
+        isLaunching = false;
+        cruiseUnlocked = false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -181,7 +340,7 @@ public class GlidingSystem : MonoBehaviour
 
     private void ExitGlideOnGroundCollision(Collision collision)
     {
-        if (!isGliding || collision == null)
+        if (!isGliding || isLaunching || collision == null)
             return;
 
         if ((groundMask.value & (1 << collision.gameObject.layer)) == 0)
@@ -193,6 +352,7 @@ public class GlidingSystem : MonoBehaviour
             if (contact.normal.y >= minGroundNormalY)
             {
                 isGliding = false;
+                EndGlide();
                 return;
             }
         }
@@ -206,7 +366,7 @@ public class GlidingSystem : MonoBehaviour
         float speed = v.magnitude;
         Vector3 forward = transform.forward;
 
-        if (forwardAcceleration > 1e-5f)
+        if (forwardAcceleration > 1e-5f && HasForwardGlideInput())
             rb.AddForce(forward * forwardAcceleration, ForceMode.Acceleration);
 
         if (speed > 0.01f)
@@ -214,6 +374,10 @@ public class GlidingSystem : MonoBehaviour
 
         // Calculate the air density
         float air = Mathf.Clamp01(speed / Mathf.Max(0.01f, stallSpeed));
+        air = Mathf.Max(cruiseMinAirFactor, air);
+
+        if (cruiseGravityCancel > 1e-5f)
+            rb.AddForce(Vector3.up * cruiseGravityCancel, ForceMode.Acceleration);
         
         // Calculate the lift force based on the speed and air density
         float lift = liftPerSpeed * speed * air * Mathf.Clamp01(Vector3.Dot(transform.up, Vector3.up));
@@ -251,6 +415,27 @@ public class GlidingSystem : MonoBehaviour
 
     public void SetGliding(bool value)
     {
+        if (value == isGliding)
+        {
+            return;
+        }
+
         isGliding = value;
+        if (value)
+        {
+            if (rb != null)
+            {
+                BeginGlideLaunch();
+            }
+            else
+            {
+                isLaunching = false;
+                cruiseUnlocked = false;
+            }
+        }
+        else
+        {
+            EndGlide();
+        }
     }
 }
