@@ -67,6 +67,8 @@ public partial class PlayerController : MonoBehaviour
     private float baseScaleY;
     private Quaternion modelRootBaseLocalRotation;
     private const float groundedVerticalClamp = 0f;
+    private const float groundSkin = 0.04f;
+    private const float groundNudgeMax = 0.35f;
 
     // Camera
     private ThirdPersonCam thirdPersonCam;
@@ -194,6 +196,19 @@ public partial class PlayerController : MonoBehaviour
         ApplyHorizontalMotion();
         ApplyDashLungeIfPending();
         VerticalVelocity(verticalVelocity);
+
+        // Mesh terrain + Rigidbody: capsule can settle slightly into the floor when you stop; lift a hair so friction does not lock movement.
+        if (physicsCollider != null && rb.linearVelocity.y <= 0.08f)
+        {
+            Bounds b = physicsCollider.bounds;
+            float r = Mathf.Max(0.05f, b.extents.x * 0.55f);
+            if (Physics.SphereCast(b.center, r, Vector3.down, out RaycastHit gh, b.extents.y + groundSkin + 0.12f, groundMask, QueryTriggerInteraction.Ignore))
+            {
+                float push = gh.point.y + groundSkin - b.min.y;
+                if (push > 0.0005f && push <= groundNudgeMax)
+                    rb.MovePosition(rb.position + new Vector3(0f, push, 0f));
+            }
+        }
     }
 
     // Applies the pending yaw rotation to the player
@@ -376,7 +391,7 @@ public partial class PlayerController : MonoBehaviour
         }
 
         float colliderBottomOffset = bounds.center.y - bounds.min.y;
-        snappedPosition = new Vector3(rb.position.x, hit.point.y + colliderBottomOffset, rb.position.z);
+        snappedPosition = new Vector3(rb.position.x, hit.point.y + colliderBottomOffset + groundSkin, rb.position.z);
         return true;
     }
 
