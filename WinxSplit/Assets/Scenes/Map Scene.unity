@@ -3713,10 +3713,10 @@ MonoBehaviour:
   rb: {fileID: 1916737570}
   physicsCollider: {fileID: 1079398648}
   myAnimator: {fileID: 1079398647}
-  groundAcceleration: 35
-  groundDeceleration: 45
-  airAcceleration: 12
-  airDeceleration: 8
+  groundAcceleration: 5
+  groundDeceleration: 100
+  airAcceleration: 1
+  airDeceleration: 100
   jumpHeight: 1.2
   dashLungeImpulse: 14
   dashAnimatorHoldDuration: 0.42
@@ -6124,13 +6124,23 @@ MonoBehaviour:
   steerMaxDegreesPerSecond: 30
   pullUpPitchInputScale: 1
   divePitchInputScale: 1.2
-  forwardAcceleration: 500
+  forwardAcceleration: 40
   quadraticDrag: 0.2
-  liftPerSpeed: 3.5
-  stallSpeed: 3.5
-  diveBoost: 12
-  diveDropAcceleration: 100
-  loftLiftWhenNoseUp: 90
+  liftPerSpeed: 1.2
+  stallSpeed: 6
+  diveBoost: 3
+  diveDropAcceleration: 12
+  loftLiftWhenNoseUp: 6
+  launchMinWorldY: 12
+  launchHeightAboveGround: 10
+  launchRiseSpeed: 1.5
+  launchHoverDamp: 2
+  launchArrivalThreshold: 0.35
+  launchGroundRaycastHeight: 2
+  launchGroundRaycastDistance: 1000
+  cruiseEntrySpeed: 7
+  cruiseMinAirFactor: 0.45
+  cruiseGravityCancel: 8.5
 --- !u!4 &1916737572
 Transform:
   m_ObjectHideFlags: 0
@@ -6140,7 +6150,7 @@ Transform:
   m_GameObject: {fileID: 1916737569}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 60, y: 2, z: 60}
+  m_LocalPosition: {x: 60, y: 4, z: 60}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
