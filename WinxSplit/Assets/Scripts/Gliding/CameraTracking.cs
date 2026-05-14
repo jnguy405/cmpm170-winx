@@ -16,16 +16,16 @@ public class CameraTracking : MonoBehaviour
 
     private void OnEnable()
     {
-        UpdateCameraPose();
+        UpdateCameraPose(true);
     }
 
     // Late update the camera and set the position and rotation of the camera
     private void LateUpdate()
     {
-        UpdateCameraPose();
+        UpdateCameraPose(false);
     }
 
-    private void UpdateCameraPose()
+    private void UpdateCameraPose(bool snap)
     {
         if (player == null)
         {
@@ -35,15 +35,29 @@ public class CameraTracking : MonoBehaviour
         // Calculate the focus point and the camera position
         Vector3 focus = player.position + player.TransformDirection(lookFocusLocal);
         Vector3 desiredPosition = player.position + player.TransformDirection(cameraOffsetLocal);
-        float posAlpha = 1f - Mathf.Exp(-positionSmooth * Time.deltaTime);
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, posAlpha);
+        if (snap)
+        {
+            transform.position = desiredPosition;
+        }
+        else
+        {
+            float posAlpha = 1f - Mathf.Exp(-positionSmooth * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, desiredPosition, posAlpha);
+        }
 
         Vector3 toFocus = focus - transform.position;
         if (toFocus.sqrMagnitude > 1e-6f)
         {
             Quaternion desiredRotation = Quaternion.LookRotation(toFocus.normalized, player.up);
-            float rotAlpha = 1f - Mathf.Exp(-rotationSmooth * Time.deltaTime);
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotAlpha);
+            if (snap)
+            {
+                transform.rotation = desiredRotation;
+            }
+            else
+            {
+                float rotAlpha = 1f - Mathf.Exp(-rotationSmooth * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotAlpha);
+            }
         }
     }
 }

@@ -13,6 +13,8 @@ public class CamModeSwitch : MonoBehaviour
 
     private ThirdPersonCam thirdPersonCamera;
     private CameraTracking glidingCamera;
+    private Camera thirdPersonUnityCamera;
+    private Camera glidingUnityCamera;
 
     private bool initialized;
 
@@ -26,10 +28,7 @@ public class CamModeSwitch : MonoBehaviour
         ApplyCameraState(GetDesiredGlideState(), true);
     }
 
-    private void Update()
-    {
-        ApplyCameraState(GetDesiredGlideState(), false);
-    }
+    public bool IsGlideCameraActive => isGliding;
 
     public void SetGliding(bool value)
     {
@@ -62,6 +61,41 @@ public class CamModeSwitch : MonoBehaviour
         if (glidingCamera == null && glidingCameraRoot != null)
         {
             glidingCamera = glidingCameraRoot.GetComponent<CameraTracking>();
+        }
+
+        if (thirdPersonUnityCamera == null && thirdPersonCameraRoot != null)
+        {
+            thirdPersonUnityCamera = thirdPersonCameraRoot.GetComponent<Camera>();
+        }
+
+        if (glidingUnityCamera == null && glidingCameraRoot != null)
+        {
+            glidingUnityCamera = glidingCameraRoot.GetComponent<Camera>();
+        }
+    }
+
+    private void ApplyUnityCameraModes(bool gliding)
+    {
+        if (thirdPersonUnityCamera != null)
+        {
+            bool active = !gliding;
+            thirdPersonUnityCamera.enabled = active;
+            thirdPersonUnityCamera.depth = active ? 0f : -10f;
+            if (active)
+            {
+                thirdPersonUnityCamera.clearFlags = CameraClearFlags.Skybox;
+            }
+        }
+
+        if (glidingUnityCamera != null)
+        {
+            bool active = gliding;
+            glidingUnityCamera.enabled = active;
+            glidingUnityCamera.depth = active ? 0f : -10f;
+            if (active)
+            {
+                glidingUnityCamera.clearFlags = CameraClearFlags.Skybox;
+            }
         }
     }
 
@@ -98,6 +132,8 @@ public class CamModeSwitch : MonoBehaviour
         {
             glidingCamera.enabled = gliding;
         }
+
+        ApplyUnityCameraModes(gliding);
     }
 
 }

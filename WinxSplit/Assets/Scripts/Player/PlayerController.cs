@@ -155,11 +155,11 @@ public partial class PlayerController : MonoBehaviour
             return;
         }
 
-        UpdateGroundedState();
         HandleStateInput();
         HandleJumpInput();
         HandleMouseLookInput();
         MovementInput();
+        UpdateGroundedState();
         UpdateAnimation();
     }
 
@@ -231,6 +231,16 @@ public partial class PlayerController : MonoBehaviour
         }
 
         bool glideExited = wasGliding && !currentlyGliding;
+        if (glideExited && camModeSwitch != null)
+        {
+            camModeSwitch.SetGliding(false);
+        }
+        else if (camModeSwitch != null && glidingSystem != null
+            && !glidingSystem.IsGliding && camModeSwitch.IsGlideCameraActive)
+        {
+            camModeSwitch.SetGliding(false);
+        }
+
         bool justLanded = isGrounded && !wasGrounded;
         bool shouldSnapAfterGroundedGlideExit = isGrounded && !currentlyGliding && !hasSnappedAfterGlide;
         if (glideExited || (justLanded && wasGliding) || shouldSnapAfterGroundedGlideExit)
@@ -461,7 +471,9 @@ public partial class PlayerController : MonoBehaviour
     // Switches to Gliding System and Gliding Camera mode
     private void ToggleGlideMode()
     {
-        bool currentlyGliding = glidingSystem != null && glidingSystem.IsGliding;
+        bool currentlyGliding = camModeSwitch != null
+            ? camModeSwitch.IsGlideCameraActive
+            : glidingSystem != null && glidingSystem.IsGliding;
         bool nextGlideState = !currentlyGliding;
 
         if (camModeSwitch != null)
