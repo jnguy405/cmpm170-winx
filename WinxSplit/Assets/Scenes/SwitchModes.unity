@@ -460,6 +460,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3338392216436705275, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
   m_PrefabInstance: {fileID: 1122594040}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1122594042 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3017098895884131664, guid: c4e9125cc999b8544b58097639eafbc0, type: 3}
+  m_PrefabInstance: {fileID: 1122594040}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1130653921
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,11 +616,14 @@ MonoBehaviour:
   camModeSwitch: {fileID: 1889591564}
   rb: {fileID: 773281356}
   physicsCollider: {fileID: 1468265632}
+  myAnimator: {fileID: 1122594042}
   groundAcceleration: 35
   groundDeceleration: 45
   airAcceleration: 12
   airDeceleration: 8
   jumpHeight: 1.2
+  dashLungeImpulse: 14
+  dashAnimatorHoldDuration: 0.42
   groundMask:
     serializedVersion: 2
     m_Bits: 8
@@ -1102,7 +1110,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 334a6540b6ec2dd4888e1c004046e0ed, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: e73f23e946ca9b34a8b4403e04cfb033, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

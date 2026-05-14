@@ -21,12 +21,20 @@ public partial class PlayerController
         }
 
         isSprinting = keyboard != null && keyboard.leftCtrlKey.isPressed;
+        dashPressedThisFrame = keyboard != null && keyboard.leftShiftKey.wasPressedThisFrame;
 
-        bool shouldCrouch = keyboard != null && keyboard.leftShiftKey.isPressed;
+        bool shouldCrouch = keyboard != null && keyboard.cKey.isPressed;
         if (shouldCrouch != isCrouching)
         {
             Crouch(shouldCrouch);
         }
+
+        Mouse mouse = Mouse.current;
+        attack1Queued = mouse != null && mouse.leftButton.wasPressedThisFrame;
+        attack2Queued = mouse != null && mouse.rightButton.wasPressedThisFrame;
+        skill1Queued = keyboard != null && keyboard.qKey.wasPressedThisFrame;
+        skill2Queued = keyboard != null && keyboard.eKey.wasPressedThisFrame;
+        skill3Queued = keyboard != null && keyboard.rKey.wasPressedThisFrame;
     }
 
     // Handles jump input with Space when not gliding
@@ -78,6 +86,7 @@ public partial class PlayerController
 
         moveX = AxisFromKeyboard(Key.D, Key.A, Key.RightArrow, Key.LeftArrow);
         moveZ = AxisFromKeyboard(Key.W, Key.S, Key.UpArrow, Key.DownArrow);
+        isWalking = new Vector2(moveX, moveZ).sqrMagnitude > 0.01f;
         // UpdateFootsteps(move.sqrMagnitude > 0.01f && isGrounded);
     }
 
