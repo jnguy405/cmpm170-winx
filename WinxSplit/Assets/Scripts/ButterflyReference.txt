@@ -1,0 +1,49 @@
+0: yellow
+1: red monarchs
+2: ice blue
+3: yellow monarch
+4: orange and red monarch
+5: super light yellow/sketchy looking
+6: bright yellow monarchs
+7: half purple half yellow
+8: half yellow half green
+9: half blue half purple
+10: half purple half yellow
+11: half blue and half green/yellow
+12: half blue half purple
+13: white monarch
+14: standard orange monoarch
+15: light blue
+16: purple
+17:  golden
+18: light blue
+19: green and purple
+20: brown and blue
+21: brown and light blue
+22: grey moths
+23: dark pink and light pink
+24: white and pink
+25: white and green
+26: blue gradient
+27: yellow and white gradient
+28: pink and white graidient
+29: green and white gradient
+30: blue and white gradient
+31: yellow and white gradient
+32: blue gradient
+33: neon blue gradient
+34: red monarch
+35: bright purple
+36: bright blue
+37:red with white tips
+38: purple with white tips
+39: another bright blue
+40: blue and purple horizontal gradient
+41: yellow and green horizontal gradient
+42: pink and white horizontal gradient
+43: blue and pink horizontal gradient
+44: white and green horizontal gradient
+45: pink gradient
+46: lighter blue i guess
+47: baby pink
+
