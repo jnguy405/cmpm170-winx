@@ -16,7 +16,7 @@ public class DustPile : MonoBehaviour
     void Awake()
     {
         if (spawner == null)
-            spawner = FindFirstObjectByType<DustSpawner>();
+            spawner = FindAnyObjectByType<DustSpawner>();
     }
 
     public void SetSpawner(DustSpawner owner)
