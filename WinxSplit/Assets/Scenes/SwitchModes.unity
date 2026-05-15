@@ -322,13 +322,13 @@ MonoBehaviour:
   steerMaxDegreesPerSecond: 30
   pullUpPitchInputScale: 1
   divePitchInputScale: 1.2
-  forwardAcceleration: 500
+  forwardAcceleration: 40
   quadraticDrag: 0.2
-  liftPerSpeed: 3.5
-  stallSpeed: 3.5
-  diveBoost: 12
-  diveDropAcceleration: 100
-  loftLiftWhenNoseUp: 90
+  liftPerSpeed: 1.2
+  stallSpeed: 6
+  diveBoost: 3
+  diveDropAcceleration: 12
+  loftLiftWhenNoseUp: 6
 --- !u!4 &773281355
 Transform:
   m_ObjectHideFlags: 0
