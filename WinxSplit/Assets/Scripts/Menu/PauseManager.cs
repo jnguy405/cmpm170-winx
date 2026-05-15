@@ -16,8 +16,9 @@ public class PauseManager : MonoBehaviour
         if (pauseMenuCanvas != null)
             pauseMenuCanvas.SetActive(false);
 
-        Time.timeScale = 1f;
-        AudioListener.pause = false;
+        isPaused = false;
+        GameSceneManager.PrepareForSceneLoad();
+        SetPlayerPaused(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -32,7 +33,7 @@ public class PauseManager : MonoBehaviour
         var wait = new WaitForSecondsRealtime(0f);
         while (enabled)
         {
-            if (isPaused)
+            if (isPaused && !GameSceneManager.IsReloading)
                 InputSystem.Update();
 
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -49,7 +50,7 @@ public class PauseManager : MonoBehaviour
 
     public void PauseGame()
     {
-        if (isPaused || pauseMenuCanvas == null)
+        if (isPaused || pauseMenuCanvas == null || GameSceneManager.IsReloading)
             return;
 
         isPaused = true;
@@ -59,6 +60,14 @@ public class PauseManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         AudioListener.pause = true;
+    }
+
+    public void ClearPauseState()
+    {
+        isPaused = false;
+        if (pauseMenuCanvas != null)
+            pauseMenuCanvas.SetActive(false);
+        SetPlayerPaused(false);
     }
 
     public void ResumeGame()
@@ -92,8 +101,7 @@ public class PauseManager : MonoBehaviour
     public void LoadMainMenu()
     {
         isPaused = false;
-        Time.timeScale = 1f;
-        AudioListener.pause = false;
+        GameSceneManager.PrepareForSceneLoad();
         SetPlayerPaused(false);
 
         if (pauseMenuCanvas != null)

@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 // Third-person paper-glider: mouse steers yaw / pitch / light roll on the Rigidbody.
 // Aerodynamics: drag along velocity, lift with speed, extra push when diving.
@@ -119,9 +118,6 @@ public class GlidingSystem : MonoBehaviour
     // Update the glider and set the yaw and pitch (orientation) corresponding to the mouse input
     private void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
         if (Mouse.current == null || rb == null)
             return;
 
