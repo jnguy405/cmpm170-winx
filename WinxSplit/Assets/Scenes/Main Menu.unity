@@ -635,8 +635,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110139322}
-        m_TargetAssemblyTypeName: GameSceneManager, Assembly-CSharp
+      - m_Target: {fileID: 1531293025}
+        m_TargetAssemblyTypeName: MenuUI, Assembly-CSharp
         m_MethodName: LoadCreditsScene
         m_Mode: 1
         m_Arguments:
@@ -851,7 +851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26645177e017eb44ebcfc4d9fa0e5577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSceneManager
-  loadMainMenuOnAwake: 1
+  loadMainMenuOnAwake: 0
 --- !u!4 &1110139323
 Transform:
   m_ObjectHideFlags: 0
@@ -950,8 +950,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110139322}
-        m_TargetAssemblyTypeName: GameSceneManager, Assembly-CSharp
+      - m_Target: {fileID: 1531293025}
+        m_TargetAssemblyTypeName: MenuUI, Assembly-CSharp
         m_MethodName: LoadMapScene
         m_Mode: 1
         m_Arguments:
@@ -1220,8 +1220,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110139322}
-        m_TargetAssemblyTypeName: GameSceneManager, Assembly-CSharp
+      - m_Target: {fileID: 1531293025}
+        m_TargetAssemblyTypeName: MenuUI, Assembly-CSharp
         m_MethodName: QuitGame
         m_Mode: 1
         m_Arguments:
@@ -1282,6 +1282,7 @@ GameObject:
   - component: {fileID: 1531293023}
   - component: {fileID: 1531293022}
   - component: {fileID: 1531293021}
+  - component: {fileID: 1531293025}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -1377,6 +1378,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1531293025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531293020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c3e1f94b2d8c5479f0a6e3d1b8c4f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuUI
 --- !u!1 &1611933478
 GameObject:
   m_ObjectHideFlags: 0

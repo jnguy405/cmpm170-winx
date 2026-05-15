@@ -74,6 +74,11 @@ public partial class PlayerController : MonoBehaviour
     private ThirdPersonCam thirdPersonCam;
     private float pendingYawDelta;
 
+    public void SetGamePaused(bool paused)
+    {
+        gamePaused = paused;
+    }
+
     private void Start()
     {
         // Checks for the player's rigidbody
