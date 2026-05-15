@@ -9,10 +9,39 @@ public class CraftingTable : MonoBehaviour
 
     private bool playerNearby = false;
 
+    void OnEnable()
+    {
+        if (craftingManager != null)
+            craftingManager.CraftingUiClosed += OnCraftingUiClosed;
+    }
+
+    void OnDisable()
+    {
+        if (craftingManager != null)
+            craftingManager.CraftingUiClosed -= OnCraftingUiClosed;
+    }
+
     void Start()
     {
         if (interactText != null)
             interactText.SetActive(false);
+    }
+
+    void HideInteractPrompt()
+    {
+        if (interactText != null)
+            interactText.SetActive(false);
+    }
+
+    void RestoreInteractPrompt()
+    {
+        if (playerNearby && interactText != null)
+            interactText.SetActive(true);
+    }
+
+    void OnCraftingUiClosed()
+    {
+        RestoreInteractPrompt();
     }
 
     void Update()
@@ -22,19 +51,23 @@ public class CraftingTable : MonoBehaviour
             return;
 
         if (playerNearby && keyboard.eKey.wasPressedThisFrame)
+        {
             craftingManager.OpenUI();
+            HideInteractPrompt();
+        }
 
         if (keyboard.escapeKey.wasPressedThisFrame)
             craftingManager.CloseUI();
     }
 
-    /// <summary>
-    /// Fallback when no keyboard / testing in editor — same as legacy ButterflySpawner.
-    /// </summary>
+    // Fallback when no keyboard / testing in editor — same as legacy ButterflySpawner.
     void OnMouseDown()
     {
         if (craftingManager != null)
+        {
             craftingManager.OpenUI();
+            HideInteractPrompt();
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -58,7 +91,6 @@ public class CraftingTable : MonoBehaviour
         if (craftingManager != null)
             craftingManager.CloseUI();
 
-        if (interactText != null)
-            interactText.SetActive(false);
+        HideInteractPrompt();
     }
 }

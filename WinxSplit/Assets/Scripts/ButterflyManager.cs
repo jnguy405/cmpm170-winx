@@ -6,17 +6,75 @@ public class ButterflyManager : MonoBehaviour {
 
     public TextAsset recipeJsonAsset;
 
-    [Tooltip("Emit here for every craft type. Leave empty so each ParticleSystem emits at its own transform in the scene.")]
-    public Transform spawnPointOverride;
+    [Tooltip("CraftingTable that owns the interact trigger; leave empty to find one in the scene. Burst uses collider center, then a furniture-sized mesh.")]
+    [SerializeField] CraftingTable craftingTableSpawn;
+
+    [Tooltip("Added to the spawn point (default 2 up so the effect clears the table mesh).")]
+    [SerializeField] Vector3 craftBurstWorldOffset = new Vector3(0f, 2f, 0f);
 
     [SerializeField]
     [Min(1)]
     int emitCount = 35;
 
-    private RecipeList recipeList;
+    [Tooltip("Floor for scripted emit size (Hovl presets can be very small in-scene).")]
+    [SerializeField]
+    float minCraftBurstStartSize = 0.35f;
+
+    RecipeList recipeList;
+    CraftingTable _cachedCraftingTable;
 
     void Start() {
         LoadRecipes();
+    }
+
+    CraftingTable ResolveCraftingTable() {
+        if (craftingTableSpawn != null)
+            return craftingTableSpawn;
+        if (_cachedCraftingTable == null)
+            _cachedCraftingTable = Object.FindAnyObjectByType<CraftingTable>();
+        return _cachedCraftingTable;
+    }
+
+    static Vector3 GetCraftBurstWorldPointFromTable(CraftingTable table) {
+        if (table == null)
+            return Vector3.zero;
+
+        Collider own = table.GetComponent<Collider>();
+        if (own != null && own.enabled)
+            return own.bounds.center;
+
+        foreach (Collider c in table.GetComponentsInChildren<Collider>(true)) {
+            if (c != null && c.enabled && c.isTrigger)
+                return c.bounds.center;
+        }
+
+        foreach (Collider c in table.GetComponentsInChildren<Collider>(true)) {
+            if (c != null && c.enabled)
+                return c.bounds.center;
+        }
+
+        const float minMeshVol = 0.05f;
+        const float maxMeshVol = 480f;
+        MeshRenderer[] meshes = table.GetComponentsInChildren<MeshRenderer>(true);
+        MeshRenderer best = null;
+        float bestVol = 0f;
+        for (int i = 0; i < meshes.Length; i++) {
+            MeshRenderer mr = meshes[i];
+            if (mr == null)
+                continue;
+            Vector3 s = mr.bounds.size;
+            float vol = s.x * s.y * s.z;
+            if (vol < minMeshVol || vol > maxMeshVol)
+                continue;
+            if (vol > bestVol) {
+                bestVol = vol;
+                best = mr;
+            }
+        }
+        if (best != null)
+            return best.bounds.center;
+
+        return table.transform.position;
     }
 
     void LoadRecipes() {
@@ -24,13 +82,9 @@ public class ButterflyManager : MonoBehaviour {
             recipeList = JsonUtility.FromJson<RecipeList>(recipeJsonAsset.text);
 
             if (recipeList != null && recipeList.recipes != null) {
-                if (!RecipesAreValid(recipeList)) {
-                    Debug.LogWarning(
-                        "ButterflyManager: Recipe combinations missing from JSON (JsonUtility limitation). Using built-in recipes.");
+                if (!RecipesAreValid(recipeList))
                     recipeList = CreateDefaultRecipes();
-                }
             } else {
-                Debug.LogWarning("ButterflyManager: JSON parse failed; using built-in recipes.");
                 recipeList = CreateDefaultRecipes();
             }
         } else {
@@ -61,44 +115,27 @@ public class ButterflyManager : MonoBehaviour {
         };
     }
 
-    /// <summary>World-space position where this butterfly effect should burst.</summary>
     public Vector3 GetSpawnWorldPosition(int butterflyIndex) {
-        if (spawnPointOverride != null)
-            return spawnPointOverride.position;
+        Vector3 basePos;
 
-        if (butterflyIndex >= 0 && butterflyIndex < butterflySystems.Length &&
-            butterflySystems[butterflyIndex] != null)
-            return butterflySystems[butterflyIndex].transform.position;
+        CraftingTable table = ResolveCraftingTable();
+        if (table != null)
+            basePos = GetCraftBurstWorldPointFromTable(table);
+        else if (butterflyIndex >= 0 && butterflyIndex < butterflySystems.Length &&
+                 butterflySystems[butterflyIndex] != null)
+            basePos = butterflySystems[butterflyIndex].transform.position;
+        else
+            basePos = transform.position;
 
-        return transform.position;
+        return basePos + craftBurstWorldOffset;
     }
 
-    /// <summary>EmitParams.position must match ParticleSystem simulation space.</summary>
-    static Vector3 WorldPositionToEmitSpace(ParticleSystem ps, Vector3 worldPos) {
-        var main = ps.main;
-        switch (main.simulationSpace) {
-            case ParticleSystemSimulationSpace.Local:
-                return ps.transform.InverseTransformPoint(worldPos);
-            case ParticleSystemSimulationSpace.Custom:
-                if (main.customSimulationSpace != null)
-                    return main.customSimulationSpace.InverseTransformPoint(worldPos);
-                return worldPos;
-            default:
-                return worldPos;
-        }
-    }
-
-    /// <summary>Returns true if a recipe matched and particles were emitted.</summary>
     public bool TryCraft(int[] currentItems) {
-        if (recipeList == null || recipeList.recipes == null) {
-            Debug.LogError("ButterflyManager: No recipes loaded.");
+        if (recipeList == null || recipeList.recipes == null)
             return false;
-        }
 
-        if (currentItems == null || currentItems.Length != 3) {
-            Debug.LogWarning("ButterflyManager: Crafting requires exactly 3 items.");
+        if (currentItems == null || currentItems.Length != 3)
             return false;
-        }
 
         int[] sorted = (int[])currentItems.Clone();
         System.Array.Sort(sorted);
@@ -120,33 +157,83 @@ public class ButterflyManager : MonoBehaviour {
     }
 
     public void SpawnSpecificButterfly(int index) {
-        if (butterflySystems == null || butterflySystems.Length == 0) {
-            Debug.LogError("ButterflyManager: butterflySystems is empty.");
+        if (butterflySystems == null || butterflySystems.Length == 0)
             return;
-        }
 
-        if (index < 0 || index >= butterflySystems.Length) {
-            Debug.LogError($"ButterflyManager: Invalid butterfly index {index}.");
+        if (index < 0 || index >= butterflySystems.Length)
             return;
-        }
 
         ParticleSystem ps = butterflySystems[index];
-        if (ps == null) {
-            Debug.LogError($"ButterflyManager: butterflySystems[{index}] is not assigned.");
+        if (ps == null)
             return;
-        }
 
         Vector3 worldPos = GetSpawnWorldPosition(index);
-        Vector3 emitPos = WorldPositionToEmitSpace(ps, worldPos);
 
-        if (!ps.isPlaying)
-            ps.Play();
+        ps.gameObject.SetActive(true);
 
-        var emitParams = new ParticleSystem.EmitParams {
-            position = emitPos,
-            applyShapeToPosition = false
-        };
-        ps.Emit(emitParams, emitCount);
+        var psr = ps.GetComponent<ParticleSystemRenderer>();
+        if (psr != null)
+            psr.enabled = true;
+
+        var emission = ps.emission;
+        bool emissionWasOn = emission.enabled;
+        emission.enabled = true;
+
+        var main = ps.main;
+        var savedSpace = main.simulationSpace;
+
+        Transform tr = ps.transform;
+        Vector3 savedPosition = tr.position;
+        Quaternion savedRotation = tr.rotation;
+        bool repositionedEmitter = false;
+
+        if (Vector3.SqrMagnitude(worldPos - savedPosition) > 0.0001f) {
+            tr.SetPositionAndRotation(worldPos, savedRotation);
+            repositionedEmitter = true;
+        }
+
+        var shape = ps.shape;
+        bool shapeWasEnabled = shape.enabled;
+        var noise = ps.noise;
+        bool noiseWasEnabled = noise.enabled;
+
+        try {
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            shape.enabled = false;
+            noise.enabled = false;
+
+            ps.Clear(true);
+
+            if (!ps.isPlaying)
+                ps.Play();
+
+            float size = Mathf.Max(main.startSize.constant,
+                Mathf.Max(main.startSize.constantMin, main.startSize.constantMax));
+            size = Mathf.Max(size, minCraftBurstStartSize);
+
+            const float craftBurstLifetime = 8f;
+            var emitParams = new ParticleSystem.EmitParams {
+                position = worldPos,
+                startSize = size,
+                startLifetime = craftBurstLifetime,
+                velocity = Vector3.up * 0.35f,
+                applyShapeToPosition = false
+            };
+            ps.Emit(emitParams, emitCount);
+        }
+        finally {
+            shape.enabled = shapeWasEnabled;
+            noise.enabled = noiseWasEnabled;
+            emission.enabled = emissionWasOn;
+
+            if (repositionedEmitter) {
+                tr.SetPositionAndRotation(savedPosition, savedRotation);
+                main.simulationSpace = ParticleSystemSimulationSpace.World;
+            } else {
+                main.simulationSpace = savedSpace;
+            }
+        }
     }
 }
 

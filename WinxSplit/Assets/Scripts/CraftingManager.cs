@@ -1,9 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class CraftingManager : MonoBehaviour
 {
+    // Fired whenever the crafting panel is closed (including on successful craft).
+    public event Action CraftingUiClosed;
+
     public ButterflyManager butterflyManager;
     public InventoryManager inventory;
     public GameObject craftingUIPanel;
@@ -34,6 +38,7 @@ public class CraftingManager : MonoBehaviour
             craftingUIPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        CraftingUiClosed?.Invoke();
     }
 
     public void SelectItemForCrafting(int itemID)
