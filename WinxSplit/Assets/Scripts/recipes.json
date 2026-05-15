@@ -1,14 +1,24 @@
 {
   "recipes": [
     {
-      "combination": [1, 1, 2],
+      "combination": [0, 7, 5],
       "butterflyID": 0,
-      "name": "Red Monarch"
+      "name": "Bright Yellow Monarch"
     },
     {
-      "combination": [2, 2, 2],
+      "combination": [7, 3, 6],
       "butterflyID": 1,
-      "name": "Blue Morpho"
+      "name": "White Monarch"
+    },
+    {
+      "combination": [4, 3, 2],
+      "butterflyID": 2,
+      "name": "Green and White Gradient"
+    },
+    {
+      "combination": [0, 1, 5],
+      "butterflyID": 3,
+      "name": "Blue and White Gradient"
     }
   ]
 }
