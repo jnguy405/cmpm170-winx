@@ -7,29 +7,31 @@ public class CraftingManager : MonoBehaviour
     public ButterflyManager butterflyManager;
     public InventoryManager inventory;
     public GameObject craftingUIPanel;
-    
+
     [Header("UI Slots")]
-    public Image[] slotImages; // Drag your 3 UI Box images here
-    public Sprite[] itemSprites; // Drag your item icons here in ID order
-    public Sprite emptySlotSprite; // Optional
-    
+    public Image[] slotImages;
+    public Sprite[] itemSprites;
+    public Sprite emptySlotSprite;
+
     public Color activeColor = Color.white;
     public Color emptyColor = new Color(1, 1, 1, 0.2f);
-    
+
     private List<int> currentCombo = new List<int>();
 
     void Start() => CloseUI();
 
     public void OpenUI()
     {
-        craftingUIPanel.SetActive(true);
+        if (craftingUIPanel != null)
+            craftingUIPanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
     public void CloseUI()
     {
-        craftingUIPanel.SetActive(false);
+        if (craftingUIPanel != null)
+            craftingUIPanel.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -37,6 +39,12 @@ public class CraftingManager : MonoBehaviour
     public void SelectItemForCrafting(int itemID)
     {
         if (currentCombo.Count >= 3) return;
+
+        if (inventory == null)
+        {
+            Debug.LogError("CraftingManager: Inventory is not assigned.");
+            return;
+        }
 
         if (inventory.HasItem(itemID))
         {
@@ -48,39 +56,73 @@ public class CraftingManager : MonoBehaviour
 
     void UpdateUI()
     {
+        if (slotImages == null) return;
+
         for (int i = 0; i < slotImages.Length; i++)
         {
             if (i < currentCombo.Count)
             {
-                // Set the item icon
                 int id = currentCombo[i];
-                slotImages[i].sprite = itemSprites[id];
-                
-                // Make the icon fully visible
-                slotImages[i].color = new Color(1, 1, 1, 1); 
+                if (itemSprites != null && id >= 0 && id < itemSprites.Length)
+                {
+                    slotImages[i].sprite = itemSprites[id];
+                    slotImages[i].color = activeColor;
+                }
+                else
+                    Debug.LogWarning($"CraftingManager: No sprite for item id {id}.");
             }
             else
             {
-                // Hide the icon by making it completely transparent
-                // This reveals the background image underneath it
-                slotImages[i].color = new Color(1, 1, 1, 0); 
+                if (emptySlotSprite != null)
+                    slotImages[i].sprite = emptySlotSprite;
+                slotImages[i].color = emptyColor.a > Mathf.Epsilon
+                    ? emptyColor
+                    : new Color(1, 1, 1, 0);
             }
         }
     }
 
     public void Craft()
     {
-        if (currentCombo.Count == 3)
+        if (butterflyManager == null)
         {
-            butterflyManager.CheckRecipe(currentCombo.ToArray(), Vector3.zero);
-            currentCombo.Clear();
-            UpdateUI();
-            CloseUI();
+            Debug.LogError("CraftingManager: Butterfly Manager is not assigned.");
+            return;
         }
+
+        if (inventory == null)
+        {
+            Debug.LogError("CraftingManager: Inventory is not assigned.");
+            return;
+        }
+
+        if (currentCombo.Count != 3)
+        {
+            Debug.LogWarning("CraftingManager: Place 3 items in the slots before crafting.");
+            return;
+        }
+
+        int[] combo = currentCombo.ToArray();
+        bool crafted = butterflyManager.TryCraft(combo);
+
+        currentCombo.Clear();
+        UpdateUI();
+
+        if (!crafted)
+        {
+            foreach (int id in combo)
+                inventory.AddItem(id);
+            Debug.LogWarning("CraftingManager: Unknown combination — ingredients returned to inventory.");
+            return;
+        }
+
+        CloseUI();
     }
 
     public void Cancel()
     {
+        if (inventory == null) return;
+
         foreach (int id in currentCombo) inventory.AddItem(id);
         currentCombo.Clear();
         UpdateUI();
@@ -91,12 +133,16 @@ public class CraftingManager : MonoBehaviour
         if (currentCombo.Count >= 3)
             return;
 
+        if (inventory == null)
+        {
+            Debug.LogError("CraftingManager: Inventory is not assigned.");
+            return;
+        }
+
         if (inventory.HasItem(itemID))
         {
             currentCombo.Add(itemID);
-
             inventory.RemoveItem(itemID);
-
             UpdateUI();
         }
     }

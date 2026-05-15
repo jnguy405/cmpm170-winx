@@ -2,13 +2,43 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    // Index 0 = Item ID 0, Index 1 = Item ID 1, etc.
-    // You can now type the numbers directly into this list in the Inspector!
-    public int[] itemCounts = new int[5]; 
+    [Tooltip("Minimum item ID slots (ID 0 .. length-1). Grows automatically if you add higher IDs at runtime.")]
+    public int[] itemCounts = new int[8];
+
+    void Awake()
+    {
+        EnsureCapacity(8);
+    }
+
+    void EnsureCapacity(int minLength)
+    {
+        if (itemCounts == null)
+        {
+            itemCounts = new int[minLength];
+            return;
+        }
+
+        if (itemCounts.Length >= minLength)
+            return;
+
+        var next = new int[minLength];
+        System.Array.Copy(itemCounts, next, itemCounts.Length);
+        itemCounts = next;
+    }
+
+    void EnsureIdFits(int id)
+    {
+        if (id < 0) return;
+        int need = id + 1;
+        if (itemCounts == null || itemCounts.Length < need)
+            EnsureCapacity(Mathf.NextPowerOfTwo(Mathf.Max(need, 8)));
+    }
 
     public void AddItem(int id)
     {
-        if (id >= 0 && id < itemCounts.Length) itemCounts[id]++;
+        if (id < 0) return;
+        EnsureIdFits(id);
+        itemCounts[id]++;
     }
 
     public bool HasItem(int id)
