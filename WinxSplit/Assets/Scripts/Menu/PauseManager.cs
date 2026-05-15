@@ -1,60 +1,105 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 public class PauseManager : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuCanvas;
-    
-    private bool isPaused = false;
+    [SerializeField] private PlayerController playerController;
 
-    void Start()
+    private bool isPaused;
+
+    private void Start()
     {
+        if (playerController == null)
+            playerController = FindAnyObjectByType<PlayerController>();
+
         if (pauseMenuCanvas != null)
-        {
             pauseMenuCanvas.SetActive(false);
-        }
+
         Time.timeScale = 1f;
+        AudioListener.pause = false;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
+    private void OnEnable()
     {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        StartCoroutine(PauseInputLoop());
+    }
+
+    private IEnumerator PauseInputLoop()
+    {
+        var wait = new WaitForSecondsRealtime(0f);
+        while (enabled)
         {
-            if (!isPaused)
+            if (isPaused)
+                InputSystem.Update();
+
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                PauseGame();
+                if (isPaused)
+                    ResumeGame();
+                else
+                    PauseGame();
             }
+
+            yield return wait;
         }
     }
 
-    private void PauseGame()
+    public void PauseGame()
     {
+        if (isPaused || pauseMenuCanvas == null)
+            return;
+
         isPaused = true;
         pauseMenuCanvas.SetActive(true);
         Time.timeScale = 0f;
+        SetPlayerPaused(true);
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        
-        // Pause all audio
         AudioListener.pause = true;
     }
 
     public void ResumeGame()
     {
+        if (!isPaused || pauseMenuCanvas == null)
+            return;
+
         isPaused = false;
         pauseMenuCanvas.SetActive(false);
         Time.timeScale = 1f;
+        SetPlayerPaused(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        
-        // Resume all audio
         AudioListener.pause = false;
+    }
+
+    private void SetPlayerPaused(bool paused)
+    {
+        if (playerController == null)
+            playerController = FindAnyObjectByType<PlayerController>();
+
+        if (playerController != null)
+            playerController.SetGamePaused(paused);
     }
 
     public void OnVolumeButtonPressed()
     {
         // Volume control will be implemented later
+    }
+
+    public void LoadMainMenu()
+    {
+        isPaused = false;
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
+        SetPlayerPaused(false);
+
+        if (pauseMenuCanvas != null)
+            pauseMenuCanvas.SetActive(false);
+
+        if (GameSceneManager.Instance != null)
+            GameSceneManager.Instance.LoadMainMenu();
     }
 }
