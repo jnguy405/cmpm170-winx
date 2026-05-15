@@ -67,12 +67,15 @@ public class PauseManager : MonoBehaviour
         isPaused = false;
         if (pauseMenuCanvas != null)
             pauseMenuCanvas.SetActive(false);
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
         SetPlayerPaused(false);
     }
 
+    /// <summary>UI Continue — always restores gameplay (guarding only on isPaused let timeScale stay 0).</summary>
     public void ResumeGame()
     {
-        if (!isPaused || pauseMenuCanvas == null)
+        if (pauseMenuCanvas == null)
             return;
 
         isPaused = false;
