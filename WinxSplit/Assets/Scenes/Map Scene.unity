@@ -6672,21 +6672,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DustSpawner
   config:
-    myObject: {fileID: 0}
+    myObject: {fileID: 1956904787}
     optionalSpawnPrefabs: []
-    totalObjects: 20
-    clusterCount: 4
-    placementCenter: {x: 0, y: 0, z: 0}
-    placementAreaSize: {x: 50, y: 10, z: 50}
+    totalObjects: 10
+    clusterCount: 10
+    placementCenter: {x: 50, y: 1, z: 50}
+    placementAreaSize: {x: 80, y: 10, z: 80}
     minClusterDistance: 10
     clusterRadiusVariability: 0.3
     clusterBaseRadius: 5
-    minHeightAboveGround: 1
-    maxHeightAboveGround: 5
+    minHeightAboveGround: 0.1
+    maxHeightAboveGround: 0.1
     groundLayer:
       serializedVersion: 2
       m_Bits: 4294967295
-    fallbackSpawnHeight: 10
+    fallbackSpawnHeight: 1
     exclusionZones: []
     useLayerExclusion: 1
     layerExclusions:
@@ -13186,6 +13186,70 @@ Transform:
   - {fileID: 1079398645}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1956904786
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 66.76609
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.00513
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 68.51031
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+      propertyPath: m_Name
+      value: FairyDust
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 65702495048144492, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+    - {fileID: -8700617353114198275, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+--- !u!1 &1956904787 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1a91a9aeeb4b14d4c82e8f034a8641ab, type: 3}
+  m_PrefabInstance: {fileID: 1956904786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2001437172
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13801,6 +13865,7 @@ SceneRoots:
   - {fileID: 1916737572}
   - {fileID: 584413040}
   - {fileID: 1426621369}
+  - {fileID: 1956904786}
   - {fileID: 1210147758}
   - {fileID: 632190774}
   - {fileID: 1669473042}
