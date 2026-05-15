@@ -535,8 +535,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1197,8 +1197,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 4 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2042,8 +2042,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Four-Leaf Clover
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2179,8 +2179,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Water Droplet
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2445,8 +2445,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3077,8 +3077,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Silk
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5778,8 +5778,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6183,8 +6183,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6500,8 +6500,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Lightning Bolt
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6647,6 +6647,32 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6660894281dc05043aa2954e1ff3cd4f, type: 3}
+--- !u!1 &1168805489 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 546051625c9f7a740a6d050caa00daa4, type: 3}
+  m_PrefabInstance: {fileID: 1323865389}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1168805491
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1168805489}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1174056217
 GameObject:
   m_ObjectHideFlags: 0
@@ -7710,7 +7736,10 @@ PrefabInstance:
     - {fileID: -8700617353114198275, guid: 546051625c9f7a740a6d050caa00daa4, type: 3}
     - {fileID: 65702495048144492, guid: 546051625c9f7a740a6d050caa00daa4, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 546051625c9f7a740a6d050caa00daa4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1168805491}
   m_SourcePrefab: {fileID: 100100000, guid: 546051625c9f7a740a6d050caa00daa4, type: 3}
 --- !u!1001 &1323918371
 PrefabInstance:
@@ -8122,8 +8151,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 3 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8502,8 +8531,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Rose Petals
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9082,8 +9111,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Yarn
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9353,8 +9382,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Snowflake
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9604,7 +9633,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1531865594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16487,8 +16516,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 5 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -16729,8 +16758,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Fairy Dust: 0'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -17187,8 +17216,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 4 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -17523,8 +17552,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 5 Fairy Dust
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
+  m_sharedMaterial: {fileID: 3452270230410215335, guid: 39d1281ae81b43e49ae2328ef19b40aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
