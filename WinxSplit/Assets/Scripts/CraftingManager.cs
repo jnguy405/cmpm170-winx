@@ -52,16 +52,18 @@ public class CraftingManager : MonoBehaviour
         {
             if (i < currentCombo.Count)
             {
-                // Set the sprite to the one matching the item ID
+                // Set the item icon
                 int id = currentCombo[i];
                 slotImages[i].sprite = itemSprites[id];
-                slotImages[i].color = activeColor;
+                
+                // Make the icon fully visible
+                slotImages[i].color = new Color(1, 1, 1, 1); 
             }
             else
             {
-                // Show empty slot sprite and lower the alpha
-                slotImages[i].sprite = emptySlotSprite;
-                slotImages[i].color = emptyColor;
+                // Hide the icon by making it completely transparent
+                // This reveals the background image underneath it
+                slotImages[i].color = new Color(1, 1, 1, 0); 
             }
         }
     }
