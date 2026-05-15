@@ -36,6 +36,9 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        
+        // Pause all audio
+        AudioListener.pause = true;
     }
 
     public void ResumeGame()
@@ -45,6 +48,9 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        
+        // Resume all audio
+        AudioListener.pause = false;
     }
 
     public void OnVolumeButtonPressed()
