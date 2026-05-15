@@ -795,10 +795,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 461426663}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f51ae318f6f9a59419637331038f5fab, type: 3}
+  m_Script: {fileID: 11500000, guid: fcafd83db481c4aa7882e4878792a555, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ButterflySpawner
+  m_EditorClassIdentifier: Assembly-CSharp::CraftingTable
   craftingManager: {fileID: 691827472}
+  interactText: {fileID: 0}
 --- !u!1001 &559164814
 PrefabInstance:
   m_ObjectHideFlags: 0

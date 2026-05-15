@@ -12,50 +12,53 @@ public class CraftingTable : MonoBehaviour
     void Start()
     {
         if (interactText != null)
-        {
             interactText.SetActive(false);
-        }
     }
 
     void Update()
     {
-        if (playerNearby &&
-            Keyboard.current.eKey.wasPressedThisFrame)
-        {
+        var keyboard = Keyboard.current;
+        if (keyboard == null || craftingManager == null)
+            return;
+
+        if (playerNearby && keyboard.eKey.wasPressedThisFrame)
             craftingManager.OpenUI();
-        }
 
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
+        if (keyboard.escapeKey.wasPressedThisFrame)
             craftingManager.CloseUI();
-        }
     }
 
-    private void OnTriggerEnter(Collider other)
+    /// <summary>
+    /// Fallback when no keyboard / testing in editor — same as legacy ButterflySpawner.
+    /// </summary>
+    void OnMouseDown()
     {
-        if (other.CompareTag("Player"))
-        {
-            playerNearby = true;
-
-            if (interactText != null)
-            {
-                interactText.SetActive(true);
-            }
-        }
+        if (craftingManager != null)
+            craftingManager.OpenUI();
     }
 
-    private void OnTriggerExit(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerNearby = false;
+        if (!other.CompareTag("Player"))
+            return;
 
+        playerNearby = true;
+
+        if (interactText != null)
+            interactText.SetActive(true);
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+
+        playerNearby = false;
+
+        if (craftingManager != null)
             craftingManager.CloseUI();
 
-            if (interactText != null)
-            {
-                interactText.SetActive(false);
-            }
-        }
+        if (interactText != null)
+            interactText.SetActive(false);
     }
 }
