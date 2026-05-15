@@ -57,4 +57,14 @@ public class PauseManager : MonoBehaviour
     {
         // Volume control will be implemented later
     }
+
+    public void LoadMainMenu()
+    {
+        isPaused = false;
+        if (pauseMenuCanvas != null)
+            pauseMenuCanvas.SetActive(false);
+
+        if (GameSceneManager.Instance != null)
+            GameSceneManager.Instance.LoadMainMenu();
+    }
 }
