@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5457760880323822637}
   - component: {fileID: 6722606435453004796}
   - component: {fileID: 8470022386378652623}
+  - component: {fileID: 4652837264570338820}
   m_Layer: 0
   m_Name: recipe 1
   m_TagString: Untagged
@@ -106,3 +107,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   recipePanel: {fileID: 0}
   interactText: {fileID: 0}
+--- !u!65 &4652837264570338820
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2894447832129090274}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.553166, y: 3.9821808, z: 0.043815307}
+  m_Center: {x: -0.001637876, y: 0.00003570318, z: -9.313226e-10}

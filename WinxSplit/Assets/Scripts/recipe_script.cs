@@ -1,10 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RecipeNote : MonoBehaviour
 {
-    [Header("UI")]
-    public GameObject recipePanel;   
-    public GameObject interactText;  
+    public GameObject recipePanel;
+    public GameObject interactText;
 
     private bool playerNearby = false;
     private bool isOpen = false;
@@ -20,12 +20,12 @@ public class RecipeNote : MonoBehaviour
 
     void Update()
     {
-        if (playerNearby && Input.GetKeyDown(KeyCode.E))
+        if (playerNearby && Keyboard.current.eKey.wasPressedThisFrame)
         {
             ToggleRecipe();
         }
 
-        if (isOpen && Input.GetKeyDown(KeyCode.Escape))
+        if (isOpen && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             CloseRecipe();
         }
@@ -55,18 +55,20 @@ public class RecipeNote : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        Debug.Log("Entered trigger: " + other.name);
+
+        if (other.CompareTag("Player") || other.name.ToLower().Contains("player"))
         {
             playerNearby = true;
 
-            if (interactText != null && !isOpen)
+            if (interactText != null)
                 interactText.SetActive(true);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.name.ToLower().Contains("player"))
         {
             playerNearby = false;
             CloseRecipe();
