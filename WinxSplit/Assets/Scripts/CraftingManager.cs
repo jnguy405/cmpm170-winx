@@ -83,4 +83,19 @@ public class CraftingManager : MonoBehaviour
         currentCombo.Clear();
         UpdateUI();
     }
+
+    public void AddCraftingItem(int itemID)
+    {
+        if (currentCombo.Count >= 3)
+            return;
+
+        if (inventory.HasItem(itemID))
+        {
+            currentCombo.Add(itemID);
+
+            inventory.RemoveItem(itemID);
+
+            UpdateUI();
+        }
+    }
 }

@@ -13,7 +13,6 @@ public class CurrencyManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -32,6 +31,7 @@ public class CurrencyManager : MonoBehaviour
     public void AddDust(int amount)
     {
         fairyDust += amount;
+
         UpdateUI();
     }
 
@@ -40,7 +40,9 @@ public class CurrencyManager : MonoBehaviour
         if (fairyDust >= amount)
         {
             fairyDust -= amount;
+
             UpdateUI();
+
             return true;
         }
 
@@ -51,7 +53,8 @@ public class CurrencyManager : MonoBehaviour
     {
         if (currencyText != null)
         {
-            currencyText.text = "Fairy Dust: " + fairyDust;
+            currencyText.text =
+                "Fairy Dust: " + fairyDust;
         }
     }
 }
