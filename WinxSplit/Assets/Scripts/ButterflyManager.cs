@@ -46,8 +46,8 @@ public class ButterflyManager : MonoBehaviour {
     public void SpawnSpecificButterfly(int index) {
         if (index >= 0 && index < butterflySystems.Length) {
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
-            emitParams.position = new Vector3(0f, 0f, 0f);
-            butterflySystems[index].Emit(emitParams, 1);
+            emitParams.position = new Vector3(30.18f, 3f, 49.37f);
+            butterflySystems[index].Emit(emitParams, 10);
         }
     }
 }

@@ -3,22 +3,22 @@
     {
       "combination": [0, 7, 5],
       "butterflyID": 0,
-      "name": "Bright Yellow Monarch"
+      "name": "Ice Monarch"
     },
     {
       "combination": [7, 3, 6],
       "butterflyID": 1,
-      "name": "White Monarch"
+      "name": "Fire Monarch"
     },
     {
       "combination": [4, 3, 2],
       "butterflyID": 2,
-      "name": "Green and White Gradient"
+      "name": "Lightning Monarch"
     },
     {
       "combination": [0, 1, 5],
       "butterflyID": 3,
-      "name": "Blue and White Gradient"
+      "name": "Nature Monarch"
     }
   ]
 }
