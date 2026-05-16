@@ -349,8 +349,9 @@ Library/PackageCache/
  com.unity.visualscripting@8bed5ad90189/
   Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll
   Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll
-Library/ScriptAssemblies/
+Temp/bin/Debug/
  Analytics.dll
+ Assembly-CSharp.dll
  Purchasing.Common.dll
  Unity.2D.Sprite.Editor.dll
  Unity.2D.Tilemap.Editor.dll
@@ -426,7 +427,6 @@ Library/ScriptAssemblies/
  Unity.VSCode.Editor.dll
  UnityEditor.Purchasing.dll
  UnityEditor.SpatialTracking.dll
- UnityEditor.TestRunner.dll
  UnityEditor.UI.Analytics.dll
  UnityEditor.UI.dll
  UnityEditor.XR.LegacyInputHelpers.dll
@@ -438,10 +438,8 @@ Library/ScriptAssemblies/
  UnityEngine.Purchasing.SecurityStub.dll
  UnityEngine.Purchasing.Stores.dll
  UnityEngine.SpatialTracking.dll
- UnityEngine.TestRunner.dll
  UnityEngine.UI.dll
  UnityEngine.XR.LegacyInputHelpers.dll
-Temp/bin/Debug/Assembly-CSharp.dll
 
 [analyzerReferences]
 ../../../../../../../Program Files/Unity/Hub/Editor/6000.4.3f1/Editor/Data/Tools/BuildPipeline/Unity.SourceGenerators/

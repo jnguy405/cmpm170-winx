@@ -62,6 +62,9 @@ Assets/Scripts/
  ButterflySpawner.cs
  CollectableItem.cs
  CraftingManager.cs
+ craftingtable.cs
+ CraftSlot.cs
+ DraggableCraftItem.cs
  DustPIiles/
   DustPile.cs
   DustSpawner.cs
@@ -73,7 +76,12 @@ Assets/Scripts/
  Manager/
   CurrencyManager.cs
   FairyDustCollectible.cs
- Menu/PauseManager.cs
+  ShopManager.cs
+ Menu/
+  GameSceneManager.cs
+  MenuUI.cs
+  PauseManager.cs
+  VolumeControl.cs
  npcAI/
   BaseState.cs
   IdleState.cs
@@ -93,6 +101,7 @@ Assets/Scripts/
   ThirdPersonCam.cs
  PlayerControllerTemp.cs
  recipe_script.cs
+ shop.cs
 Assets/TextMesh Pro/Examples & Extras/Scripts/
  Benchmark01.cs
  Benchmark01_UGUI.cs
@@ -192,6 +201,7 @@ obj/Debug/.NETFramework,Version=v4.7.1.AssemblyAttributes.cs
  UnityEngine.AccessibilityModule.dll
  UnityEngine.AdaptivePerformanceModule.dll
  UnityEngine.AIModule.dll
+ UnityEngine.AMDModule.dll
  UnityEngine.AndroidJNIModule.dll
  UnityEngine.AnimationModule.dll
  UnityEngine.ARModule.dll
@@ -211,6 +221,7 @@ obj/Debug/.NETFramework,Version=v4.7.1.AssemblyAttributes.cs
  UnityEngine.GraphicsStateCollectionSerializerModule.dll
  UnityEngine.GridModule.dll
  UnityEngine.HierarchyCoreModule.dll
+ UnityEngine.HierarchyModule.dll
  UnityEngine.HotReloadModule.dll
  UnityEngine.IdentifiersModule.dll
  UnityEngine.ImageConversionModule.dll
@@ -223,6 +234,7 @@ obj/Debug/.NETFramework,Version=v4.7.1.AssemblyAttributes.cs
  UnityEngine.LocalizationModule.dll
  UnityEngine.MarshallingModule.dll
  UnityEngine.MultiplayerModule.dll
+ UnityEngine.NVIDIAModule.dll
  UnityEngine.ParticleSystemModule.dll
  UnityEngine.PerformanceReportingModule.dll
  UnityEngine.Physics2DModule.dll
@@ -407,7 +419,7 @@ Library/PackageCache/
  com.unity.nuget.mono-cecil@ecb9724e46ff/Mono.Cecil.dll
  com.unity.nuget.newtonsoft-json@4dfd81071c64/Runtime/Newtonsoft.Json.dll
  com.unity.visualscripting@8bed5ad90189/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll
-Library/ScriptAssemblies/
+Temp/bin/Debug/
  Analytics.dll
  Purchasing.Common.dll
  Unity.2D.Sprite.Editor.dll
