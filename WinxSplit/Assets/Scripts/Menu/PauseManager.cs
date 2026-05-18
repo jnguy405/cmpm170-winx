@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PauseManager : MonoBehaviour
 {
+    public static event System.Action OnGameResumed;
     [SerializeField] private GameObject pauseMenuCanvas;
     [SerializeField] private PlayerController playerController;
 
@@ -85,6 +86,8 @@ public class PauseManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         AudioListener.pause = false;
+        
+        OnGameResumed?.Invoke();
     }
 
     private void SetPlayerPaused(bool paused)

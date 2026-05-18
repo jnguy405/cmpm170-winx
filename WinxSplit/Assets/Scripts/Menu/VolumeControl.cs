@@ -5,10 +5,7 @@ using UnityEngine.UI;
 public class VolumeControl : MonoBehaviour
 {
     [Header("Audio Mixer")]
-    [SerializeField] private AudioMixer audioMixer;
-    
-    [Header("UI Panel")]
-    [SerializeField] private GameObject volumePanel;
+    [SerializeField] private AudioMixer MainMixer;
     
     [Header("Sliders")]
     [SerializeField] private Slider masterSlider;
@@ -20,72 +17,56 @@ public class VolumeControl : MonoBehaviour
     
     private void Start()
     {
-        if (volumePanel != null)
-            volumePanel.SetActive(false);
-        
         LoadVolumeSettings();
-        
-        if (masterSlider != null)
-            masterSlider.onValueChanged.AddListener(SetMasterVolume);
-        if (windSlider != null)
-            windSlider.onValueChanged.AddListener(SetWindVolume);
-        if (waterSlider != null)
-            waterSlider.onValueChanged.AddListener(SetWaterVolume);
-        if (birdsSlider != null)
-            birdsSlider.onValueChanged.AddListener(SetBirdsVolume);
-        if (cicadasSlider != null)
-            cicadasSlider.onValueChanged.AddListener(SetCicadasVolume);
-        if (fireSlider != null)
-            fireSlider.onValueChanged.AddListener(SetFireVolume);
-    }
-    
-    public void OpenVolumePanel()
-    {
-        if (volumePanel != null)
-            volumePanel.SetActive(true);
-    }
-    
-    public void CloseVolumePanel()
-    {
-        if (volumePanel != null)
-            volumePanel.SetActive(false);
-        SaveVolumeSettings();
     }
     
     public void SetMasterVolume(float value)
     {
-        float dB = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
-        audioMixer.SetFloat("MasterVolume", dB);
+        float dB = ConvertToDecibels(value);
+        MainMixer.SetFloat("MyExposedParam 1", dB);
+        PlayerPrefs.SetFloat("MasterVolume", value);
     }
     
     public void SetWindVolume(float value)
     {
-        float dB = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
-        audioMixer.SetFloat("WindVolume", dB);
+        float dB = ConvertToDecibels(value);
+        MainMixer.SetFloat("Wind", dB);
+        PlayerPrefs.SetFloat("WindVolume", value);
     }
     
     public void SetWaterVolume(float value)
     {
-        float dB = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
-        audioMixer.SetFloat("WaterVolume", dB);
+        float dB = ConvertToDecibels(value);
+        MainMixer.SetFloat("Water", dB);
+        PlayerPrefs.SetFloat("WaterVolume", value);
     }
     
     public void SetBirdsVolume(float value)
     {
-        float dB = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
-        audioMixer.SetFloat("BirdsVolume", dB);
+        float dB = ConvertToDecibels(value);
+        MainMixer.SetFloat("Birds", dB);
+        PlayerPrefs.SetFloat("BirdsVolume", value);
     }
     
     public void SetCicadasVolume(float value)
     {
-        float dB = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
-        audioMixer.SetFloat("CicadasVolume", dB);
+        float dB = ConvertToDecibels(value);
+        MainMixer.SetFloat("Cicadas", dB);
+        PlayerPrefs.SetFloat("CicadasVolume", value);
     }
     
     public void SetFireVolume(float value)
     {
-        float dB = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
-        audioMixer.SetFloat("FireVolume", dB);
+        float dB = ConvertToDecibels(value);
+        MainMixer.SetFloat("Fire", dB);
+        PlayerPrefs.SetFloat("FireVolume", value);
+    }
+    
+    private float ConvertToDecibels(float value)
+    {
+        if (value <= 0.001f)
+            return -80f;
+        return Mathf.Log10(value) * 20f;
     }
     
     private void LoadVolumeSettings()
@@ -104,21 +85,8 @@ public class VolumeControl : MonoBehaviour
             fireSlider.value = PlayerPrefs.GetFloat("FireVolume", 0.65f);
     }
     
-    private void SaveVolumeSettings()
+    private void OnDestroy()
     {
-        if (masterSlider != null)
-            PlayerPrefs.SetFloat("MasterVolume", masterSlider.value);
-        if (windSlider != null)
-            PlayerPrefs.SetFloat("WindVolume", windSlider.value);
-        if (waterSlider != null)
-            PlayerPrefs.SetFloat("WaterVolume", waterSlider.value);
-        if (birdsSlider != null)
-            PlayerPrefs.SetFloat("BirdsVolume", birdsSlider.value);
-        if (cicadasSlider != null)
-            PlayerPrefs.SetFloat("CicadasVolume", cicadasSlider.value);
-        if (fireSlider != null)
-            PlayerPrefs.SetFloat("FireVolume", fireSlider.value);
-        
         PlayerPrefs.Save();
     }
 }
